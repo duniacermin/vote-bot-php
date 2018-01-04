@@ -84,11 +84,11 @@ class CI_Session_files_driver extends CI_Session_driver implements SessionHandle
 	protected $_sid_regexp;
 
 	/**
-	 * mbstring.func_overload flag
+	 * mbstring.func_override flag
 	 *
 	 * @var	bool
 	 */
-	protected static $func_overload;
+	protected static $func_override;
 
 	// ------------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ class CI_Session_files_driver extends CI_Session_driver implements SessionHandle
 
 		$this->_sid_regexp = $this->_config['_sid_regexp'];
 
-		isset(self::$func_overload) OR self::$func_overload = (extension_loaded('mbstring') && ini_get('mbstring.func_overload'));
+		isset(self::$func_override) OR self::$func_override = (extension_loaded('mbstring') && ini_get('mbstring.func_override'));
 	}
 
 	// ------------------------------------------------------------------------
@@ -399,7 +399,7 @@ class CI_Session_files_driver extends CI_Session_driver implements SessionHandle
 	 */
 	protected static function strlen($str)
 	{
-		return (self::$func_overload)
+		return (self::$func_override)
 			? mb_strlen($str, '8bit')
 			: strlen($str);
 	}

@@ -1,8 +1,4 @@
 {
-	"description": "Simple Vote Bot application using PHP, Codeigniter Framework, and LINE",
-	"name": "duniacermin/vote-bot-php",
-	"type": "project",
-	"license": "MIT",
 	"config": {
 		"vendor-dir": "lib/vendor"
 	},

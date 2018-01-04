@@ -231,7 +231,7 @@ class CI_Exceptions {
 	 * @param	string	$message	Error message
 	 * @param	string	$filepath	File path
 	 * @param	int	$line		Line number
-	 * @return	void
+	 * @return	string	Error page output
 	 */
 	public function show_php_error($severity, $message, $filepath, $line)
 	{

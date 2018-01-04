@@ -182,7 +182,7 @@ class CI_Loader {
 	 * Loads and instantiates libraries.
 	 * Designed to be called from application controllers.
 	 *
-	 * @param	mixed	$library	Library name
+	 * @param	string	$library	Library name
 	 * @param	array	$params		Optional parameters to pass to the library class constructor
 	 * @param	string	$object_name	An optional object name to assign to
 	 * @return	object
@@ -590,7 +590,7 @@ class CI_Loader {
 		{
 			$filename = basename($helper);
 			$filepath = ($filename === $helper) ? '' : substr($helper, 0, strlen($helper) - strlen($filename));
-			$filename = strtolower(preg_replace('#(_helper)?(\.php)?$#i', '', $filename)).'_helper';
+			$filename = strtolower(preg_replace('#(_helper)?(.php)?$#i', '', $filename)).'_helper';
 			$helper   = $filepath.$filename;
 
 			if (isset($this->_ci_helpers[$helper]))
@@ -1037,26 +1037,6 @@ class CI_Loader {
 			return $this->_ci_load_stock_library($class, $subdir, $params, $object_name);
 		}
 
-		// Safety: Was the class already loaded by a previous call?
-		if (class_exists($class, FALSE))
-		{
-			$property = $object_name;
-			if (empty($property))
-			{
-				$property = strtolower($class);
-				isset($this->_ci_varmap[$property]) && $property = $this->_ci_varmap[$property];
-			}
-
-			$CI =& get_instance();
-			if (isset($CI->$property))
-			{
-				log_message('debug', $class.' class already loaded. Second attempt ignored.');
-				return;
-			}
-
-			return $this->_ci_init_library($class, '', $params, $object_name);
-		}
-
 		// Let's search for the requested library file and load it.
 		foreach ($this->_ci_library_paths as $path)
 		{
@@ -1067,8 +1047,27 @@ class CI_Loader {
 			}
 
 			$filepath = $path.'libraries/'.$subdir.$class.'.php';
+
+			// Safety: Was the class already loaded by a previous call?
+			if (class_exists($class, FALSE))
+			{
+				// Before we deem this to be a duplicate request, let's see
+				// if a custom object name is being supplied. If so, we'll
+				// return a new instance of the object
+				if ($object_name !== NULL)
+				{
+					$CI =& get_instance();
+					if ( ! isset($CI->$object_name))
+					{
+						return $this->_ci_init_library($class, '', $params, $object_name);
+					}
+				}
+
+				log_message('debug', $class.' class already loaded. Second attempt ignored.');
+				return;
+			}
 			// Does the file exist? No? Bummer...
-			if ( ! file_exists($filepath))
+			elseif ( ! file_exists($filepath))
 			{
 				continue;
 			}
@@ -1113,17 +1112,16 @@ class CI_Loader {
 				$prefix = config_item('subclass_prefix');
 			}
 
-			$property = $object_name;
-			if (empty($property))
+			// Before we deem this to be a duplicate request, let's see
+			// if a custom object name is being supplied. If so, we'll
+			// return a new instance of the object
+			if ($object_name !== NULL)
 			{
-				$property = strtolower($library_name);
-				isset($this->_ci_varmap[$property]) && $property = $this->_ci_varmap[$property];
-			}
-
-			$CI =& get_instance();
-			if ( ! isset($CI->$property))
-			{
-				return $this->_ci_init_library($library_name, $prefix, $params, $object_name);
+				$CI =& get_instance();
+				if ( ! isset($CI->$object_name))
+				{
+					return $this->_ci_init_library($library_name, $prefix, $params, $object_name);
+				}
 			}
 
 			log_message('debug', $library_name.' class already loaded. Second attempt ignored.');
@@ -1145,8 +1143,10 @@ class CI_Loader {
 				{
 					return $this->_ci_init_library($library_name, $prefix, $params, $object_name);
 				}
-
-				log_message('debug', $path.' exists, but does not declare '.$prefix.$library_name);
+				else
+				{
+					log_message('debug', $path.' exists, but does not declare '.$prefix.$library_name);
+				}
 			}
 		}
 
@@ -1164,8 +1164,10 @@ class CI_Loader {
 					$prefix = config_item('subclass_prefix');
 					break;
 				}
-
-				log_message('debug', $path.' exists, but does not declare '.$subclass);
+				else
+				{
+					log_message('debug', $path.' exists, but does not declare '.$subclass);
+				}
 			}
 		}
 
@@ -1366,7 +1368,7 @@ class CI_Loader {
 	 * Prepare variables for _ci_vars, to be later extract()-ed inside views
 	 *
 	 * Converts objects to associative arrays and filters-out internal
-	 * variable names (i.e. keys prefixed with '_ci_').
+	 * variable names (i.e. keys prexied with '_ci_').
 	 *
 	 * @param	mixed	$vars
 	 * @return	array
@@ -1376,7 +1378,7 @@ class CI_Loader {
 		if ( ! is_array($vars))
 		{
 			$vars = is_object($vars)
-				? get_object_vars($vars)
+				? get_object_vars($object)
 				: array();
 		}
 

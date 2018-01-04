@@ -106,11 +106,11 @@ class CI_Zip {
 	public $compression_level = 2;
 
 	/**
-	 * mbstring.func_overload flag
+	 * mbstring.func_override flag
 	 *
 	 * @var	bool
 	 */
-	protected static $func_overload;
+	protected static $func_override;
 
 	/**
 	 * Initialize zip compression class
@@ -119,7 +119,7 @@ class CI_Zip {
 	 */
 	public function __construct()
 	{
-		isset(self::$func_overload) OR self::$func_overload = (extension_loaded('mbstring') && ini_get('mbstring.func_overload'));
+		isset(self::$func_override) OR self::$func_override = (extension_loaded('mbstring') && ini_get('mbstring.func_override'));
 
 		$this->now = time();
 		log_message('info', 'Zip Compression Class Initialized');
@@ -500,7 +500,7 @@ class CI_Zip {
 	 */
 	protected static function strlen($str)
 	{
-		return (self::$func_overload)
+		return (self::$func_override)
 			? mb_strlen($str, '8bit')
 			: strlen($str);
 	}
@@ -517,7 +517,7 @@ class CI_Zip {
 	 */
 	protected static function substr($str, $start, $length = NULL)
 	{
-		if (self::$func_overload)
+		if (self::$func_override)
 		{
 			// mb_substr($str, $start, null, '8bit') returns an empty
 			// string on PHP 5.3
