@@ -1,1 +1,1 @@
-web: $(composer config bin-dir)/heroku-php-apache2 htdocs/
+web: $(composer config bin-dir)/heroku-php-apache2
