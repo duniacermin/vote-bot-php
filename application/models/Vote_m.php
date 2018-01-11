@@ -61,7 +61,7 @@ class Vote_m extends CI_Model {
     ->get('vote')
     ->row();
 
-    if(count($data) > 0) return $data;
+    if($data->num_rows() > 0) return $data;
     return false;
   }
 
