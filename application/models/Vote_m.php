@@ -40,7 +40,7 @@ class Vote_m extends CI_Model {
   function changeStatus($status,$voteId)
   {
     $data = $this->db->set('status',$status)
-    ->where('vote_id',$roomId)
+    ->where('vote_id',$voteId)
     ->update('vote');
 
     if($this->db->affected_rows() > 0)
