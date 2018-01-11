@@ -289,7 +289,7 @@ class Webhook extends CI_Controller {
                 $action = "none";
                 $this->vote_m->updateAction($action,$event['source']['userId']);
 
-                $message = "Data voting anda telah diterima."
+                $message = "Data voting anda telah diterima.";
                 $message2 = "Terima kasih telah berpatisipasi dalam pemilihan ini. Nantikan hasil votingnya :)";
 
                 $textMessageBuilder = new TextMessageBuilder($message);
