@@ -94,7 +94,7 @@ class Webhook extends CI_Controller {
             // bot send welcome message
               $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
               $message .= "Terima kasih telah mengundang saya kedalam group ini \n";
-              $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
+              $message .= "\n\nSaya akan membantu kalian untuk dalam proses voting :) ";
               $message2 = "Ketik 1 untuk membuat voting";
 
               $textMessageBuilder = new TextMessageBuilder($message);
@@ -129,7 +129,7 @@ class Webhook extends CI_Controller {
                   $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
                   // change status in database
-                  $this->vote_m->changeStatus($status=1, $voteId);
+                  $this->vote_m->changeStatus(1, $voteId);
                 }
               }
               else if($this->moderator['status'] == 1)
