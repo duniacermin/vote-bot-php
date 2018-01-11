@@ -233,7 +233,7 @@ class Vote_m extends CI_Model {
 
   }
 
-  function getRoomMemberData($roomId)
+/*  function getRoomMemberData($roomId)
   {
 
   }
@@ -245,5 +245,5 @@ class Vote_m extends CI_Model {
   function setUserProgress($user_id, $newNumber){}
 
   function setScore($user_id, $score){}
-
+*/
 }

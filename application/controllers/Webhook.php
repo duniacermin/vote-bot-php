@@ -357,7 +357,7 @@ class Webhook extends CI_Controller {
 
   } // end of index.php
 
-  private function followCallback(&event)
+  /*private function followCallback(&event)
   {
     $res= $this->bot->getProfile($event['source']['userId']);
     if($res->isSucceeded())
@@ -415,7 +415,7 @@ class Webhook extends CI_Controller {
       
     }
 
-  }
+  }*/
 
   private function generateRandomString($length = 5) 
   {
@@ -428,10 +428,10 @@ class Webhook extends CI_Controller {
     return $randomString;
   }
 
-  private function stickerMessage($event){}
+/*  private function stickerMessage($event){}
 
   public function sendQuestion($replyToken, $questionNum=1){}
 
   private function checkAnswer($message, $replyToken){}
-
+*/
 }
