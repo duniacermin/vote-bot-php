@@ -56,7 +56,7 @@ class Webhook extends CI_Controller {
           $test = $event['message']['text'];
           if(strtolower($test) == "leave")
           {
-            $result = $this->bot->leaveGroup($event['source']['roomId']);
+            $result = $this->bot->leaveRoom($event['source']['roomId']);
           }
 
           // get room id
