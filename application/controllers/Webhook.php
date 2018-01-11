@@ -90,6 +90,21 @@ class Webhook extends CI_Controller {
 
             // save vote id and user to database
             $this->vote_m->saveMod($voteId,$profile,$roomId);
+
+            // bot send welcome message
+              $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+              $message .= "Terima kasih telah mengundang saya kedalam group ini \n";
+              $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
+              $message2 = "Ketik 1 untuk membuat voting";
+
+              $textMessageBuilder = new TextMessageBuilder($message);
+              $textMessageBuilder2 = new TextMessageBuilder($message2);
+              $multiMessageBuilder = new MultiMessageBuilder();
+              $multiMessageBuilder->add($textMessageBuilder);
+              $multiMessageBuilder->add($textMessageBuilder2);
+
+              // send reply message
+              $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
           }
           // if user is moderator
           else if($this->moderator['user_id'] == $event['source']['userId'])
@@ -218,7 +233,7 @@ class Webhook extends CI_Controller {
               }
             }
             // else, probably bot first time join group
-            else if($event['type'] == 'join')
+            else
             {
               // bot send welcome message
               $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
