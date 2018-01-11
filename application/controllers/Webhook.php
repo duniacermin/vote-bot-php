@@ -53,6 +53,12 @@ class Webhook extends CI_Controller {
         // if events source come from room
         if($event['source']['type'] == 'group' or $event['source']['type'] == 'room')
         {
+          $test = $event['message']['text'];
+          if(strtolower($test) == "leave")
+          {
+            $result = $bot->leaveGroup($event['source']['roomId']);
+          }
+
           // get room id
           if($event['source']['type'] == 'room')
           {
