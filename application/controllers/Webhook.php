@@ -205,11 +205,11 @@ class Webhook extends CI_Controller {
 
                   if($event['source']['type'] == 'room')
                   {
-                    $this->$bot->leaveGroup($event['source']['roomId']);
+                    $this->bot->leaveGroup($event['source']['roomId']);
                   }
                   else
                   {
-                    $this->$bot->leaveGroup($event['source']['groupId']);
+                    $this->bot->leaveGroup($event['source']['groupId']);
                   }
                 }
               }
@@ -230,7 +230,7 @@ class Webhook extends CI_Controller {
               $multiMessageBuilder->add($textMessageBuilder2);
 
               // send reply message
-              $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+              $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
             }
             
           }
