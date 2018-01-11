@@ -215,7 +215,7 @@ class Webhook extends CI_Controller {
               }
             }
             // else, probably bot first time join group
-            else
+            else if($event['type'] == 'join')
             {
               // bot send welcome message
               $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
