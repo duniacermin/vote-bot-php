@@ -128,8 +128,10 @@ class Webhook extends CI_Controller {
 
                   $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
+                  $status = 1;
+
                   // change status in database
-                  $this->vote_m->changeStatus(1, $voteId);
+                  $this->vote_m->changeStatus($status, $voteId);
                 }
               }
               else if($this->moderator['status'] == 1)
