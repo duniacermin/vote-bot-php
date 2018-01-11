@@ -94,7 +94,7 @@ class Vote_m extends CI_Model {
   function addVoteTitle($userMessage)
   {
     $data = $this->db->set('title',$userMessage)
-    ->where('vote_id', $voteId);
+    ->where('vote_id', $voteId)
     ->update('vote');
     if($this->db->affected_rows() > 0)
     {
