@@ -123,7 +123,7 @@ class Webhook extends CI_Controller {
               {
                 if($userMessage == '1' or strtolower($userMessage) == 'create vote')
                 {
-                  $message = "Masukkan judul untuk pemilihan ini";
+                  $message = "Masukkan judul untuk pemilihan ini". $voteId;
                   $textMessageBuilder = new TextMessageBuilder($message);
 
                   $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
