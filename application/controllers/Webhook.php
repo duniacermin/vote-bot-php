@@ -56,6 +56,9 @@ class Webhook extends CI_Controller {
           $test = $event['message']['text'];
           if(strtolower($test) == "leave")
           {
+            $message = "okay";
+            $textMessageBuilder = new TextMessageBuilder($message);
+            $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
             $result = $this->bot->leaveRoom($event['source']['roomId']);
           }
 
