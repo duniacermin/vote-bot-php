@@ -59,7 +59,7 @@ class Vote_m extends CI_Model {
     ->where('user_id', $userId)
     ->where('room_id',$roomId)
     ->get('vote')
-    ->row();
+    ->row_array();
 
     if(count($data) > 0) return $data;
     return false;
