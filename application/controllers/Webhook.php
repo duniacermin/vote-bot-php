@@ -51,45 +51,13 @@ class Webhook extends CI_Controller {
         $getProf = $this->bot->getProfile($event['source']['userId']);
         $profile = $getProf->getJSONDecodedBody();
 
-        $moderator = $this->checkModerator($event,$profile);
+        //$moderator = $this->checkModerator($event,$profile);
         
         
         // if event type is follow (user add the bot)
-        if($event['type'] == 'follow')
+        if($event['type'] == 'follow' || $event['type'] == 'join')
         {
-          // bot send welcome message
-          $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
-          $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
-          $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
-          $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
-          $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
-
-          $textMessageBuilder = new TextMessageBuilder($message);
-          $textMessageBuilder2 = new TextMessageBuilder($message2);
-          $multiMessageBuilder = new MultiMessageBuilder();
-          $multiMessageBuilder->add($textMessageBuilder);
-          $multiMessageBuilder->add($textMessageBuilder2);
-
-          // send reply message
-          $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-        }
-        // if event type is join (bot join group or room)
-        else if($event['type'] == 'join')
-        {
-          // bot send welcome message
-          $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
-          $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
-          $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
-          $message2 = "Ketik 1 untuk membuat voting";
-
-          $textMessageBuilder = new TextMessageBuilder($message);
-          $textMessageBuilder2 = new TextMessageBuilder($message2);
-          $multiMessageBuilder = new MultiMessageBuilder();
-          $multiMessageBuilder->add($textMessageBuilder);
-          $multiMessageBuilder->add($textMessageBuilder2);
-
-          // send reply message
-          $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+          $this->{$event['type'].'Callback'}($event);
         }
         // event type probably is message
         else
@@ -97,7 +65,7 @@ class Webhook extends CI_Controller {
           $test = $event['message']['text'];
           $source = $this->checkSource($event);
           $sourceId = $this->checkSourceId($event);
-          if($source == 'room')
+          if($source == 'room' || $source == 'group')
           {
             if(strtolower($test) == "leave")
             {
@@ -527,6 +495,44 @@ class Webhook extends CI_Controller {
     }
 
   }*/
+
+  private function followCallback($event)
+  {
+    // bot send welcome message
+    $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+    $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
+    $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
+    $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
+    $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+
+    $textMessageBuilder = new TextMessageBuilder($message);
+    $textMessageBuilder2 = new TextMessageBuilder($message2);
+    $multiMessageBuilder = new MultiMessageBuilder();
+    $multiMessageBuilder->add($textMessageBuilder);
+    $multiMessageBuilder->add($textMessageBuilder2);
+
+    // send reply message
+    $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+  }
+
+  private function joinCallback($event)
+  {
+    // bot send welcome message
+    $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+    $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
+    $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
+    $message2 = "Ketik 1 untuk membuat voting";
+
+    $textMessageBuilder = new TextMessageBuilder($message);
+    $textMessageBuilder2 = new TextMessageBuilder($message2);
+    $multiMessageBuilder = new MultiMessageBuilder();
+    $multiMessageBuilder->add($textMessageBuilder);
+    $multiMessageBuilder->add($textMessageBuilder2);
+
+    // send reply message
+    $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+  }
+
   private function checkSource($event)
   {
     if($event['source']['type'] == 'room')
