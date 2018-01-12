@@ -95,7 +95,7 @@ class Webhook extends CI_Controller {
           $sourceId = $this->checkSourceId($event);
           if(strtolower($test) == "leave")
           {
-            $this->bot->leave($sourceId);
+            $this->leave($sourceId);
           }
         }
 
