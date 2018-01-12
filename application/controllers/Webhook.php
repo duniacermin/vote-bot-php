@@ -158,7 +158,7 @@ class Webhook extends CI_Controller {
 
                   $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
                   $message .= "Kode untuk mengikuti proses voting : " . $vote['vote_id'];
-                  $message .= "Akhiri voting dengan mengetikkan 'End Vote' pada chat";
+                  $message .= "\n\nAkhiri voting dengan mengetikkan 'End Vote' pada chat";
 
                   $textMessageBuilder = new TextMessageBuilder($message);
                   $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
@@ -265,7 +265,22 @@ class Webhook extends CI_Controller {
         }
         else if($event['source']['type'] == 'user')
         {
-          $message = "halo";
+          // bot send welcome message
+            $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+            $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
+            $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
+            $message2 = "Ketik '1' atau 'create vote' untuk membuat voting";
+            $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+
+            $textMessageBuilder = new TextMessageBuilder($message);
+            $textMessageBuilder2 = new TextMessageBuilder($message2);
+            $multiMessageBuilder = new MultiMessageBuilder();
+            $multiMessageBuilder->add($textMessageBuilder);
+            $multiMessageBuilder->add($textMessageBuilder2);
+
+            // send reply message
+            $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+          //$message = "halo";
           $textMessageBuilder = new TextMessageBuilder($message);
 
           $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
@@ -277,8 +292,8 @@ class Webhook extends CI_Controller {
             $this->vote_m->saveUser($profile);
           }
           // check if incoming event is message
-          if($event['type'] == 'message')
-          {
+          // if($event['type'] == 'message')
+          // {
             $userMessage = $event['message']['text'];
             
             if($userMessage == "2" or strtolower($userMessage) == "join vote")
@@ -340,28 +355,14 @@ class Webhook extends CI_Controller {
                 $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
               }
             }
-          }
+          //}
           // probably follow message
-          else
-          {
-            // bot send welcome message
-            $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
-            $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
-            $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
-            $message2 = "Ketik '1' atau 'create vote' untuk membuat voting";
-            $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
-
-            $textMessageBuilder = new TextMessageBuilder($message);
-            $textMessageBuilder2 = new TextMessageBuilder($message2);
-            $multiMessageBuilder = new MultiMessageBuilder();
-            $multiMessageBuilder->add($textMessageBuilder);
-            $multiMessageBuilder->add($textMessageBuilder2);
-
-            // send reply message
-            $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+          // else
+          // {
+            
 
             
-          }
+          // }
         }
 
         
