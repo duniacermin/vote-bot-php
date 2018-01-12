@@ -170,13 +170,13 @@ class Webhook extends CI_Controller {
                   // add candidates to database
                   $this->vote_m->addCandidate($userMessage, $vote['vote_id']);
 
-                  $message = "List Kandidat";
+                  $message = "List Kandidat\n";
                   // bot show the list of candidate to room
                   $showList = $this->vote_m->getCandidateList($vote['vote_id']);
-                  $rowNum = 0;
+                  $rowNum = 1;
                   foreach($showList as $row)
                   {
-                    $message .= $rowNum . ". " . $row['candidates'];
+                    $message .= $rowNum . ". " . $row['candidates'] . "\n";
                     $rowNum++;
                   }
 
@@ -290,7 +290,7 @@ class Webhook extends CI_Controller {
                   $voteId = $userMessage;
                   $this->vote_m->addDetailAction($voteId,$event['source']['userId']);
                   // show candidate list
-                  $message = "List Kandidat";
+                  $message = "List Kandidat\n";
                   // bot show the list of candidate to room
                   $detailVote = $this->vote_m->getDetailVote($voteId);
                   $showList = $this->vote_m->getCandidateList($voteId);
