@@ -95,7 +95,7 @@ class Webhook extends CI_Controller {
           $sourceId = $this->checkSourceId($event);
           if(strtolower($test) == "leave")
           {
-            $this->leave($event,$sourceId);
+            $this->leave($event, $sourceId);
           }
         }
 
@@ -534,6 +534,7 @@ class Webhook extends CI_Controller {
     {
       $sourceId = $event['source']['userId'];
     }
+    return $sourceId;
   }
 
   private function leave($event, $sourceId)
