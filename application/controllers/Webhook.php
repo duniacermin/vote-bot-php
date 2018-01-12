@@ -280,7 +280,7 @@ class Webhook extends CI_Controller {
             $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
             $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
             $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
-            $message2 = "Ketik '1' atau 'create vote' untuk membuat voting";
+            $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
             $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
 
             $textMessageBuilder = new TextMessageBuilder($message);
@@ -295,6 +295,10 @@ class Webhook extends CI_Controller {
           // check if incoming event is message
           // if($event['type'] == 'message')
           // {
+          else
+          {
+
+          }
             $userMessage = $event['message']['text'];
             
             if($userMessage == "2" or strtolower($userMessage) == "join vote")
@@ -310,6 +314,9 @@ class Webhook extends CI_Controller {
             else if($this->user['action'] == "join")
             {
               // match ref code with vote id in db
+              $message = "halo";
+              $textMessageBuilder = new TextMessageBuilder($message);
+              $this->bot->replyMessage($message);
               $match = $this->vote_m->matchVoteId($userMessage);
               if($match == true)
               {
