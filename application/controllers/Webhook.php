@@ -144,15 +144,17 @@ class Webhook extends CI_Controller {
 
                 $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
+                $status = 2;
                 // change status in database
-                $this->vote_m->changeStatus($status=2, $voteId['vote_id']);
+                $this->vote_m->changeStatus($status, $voteId['vote_id']);
               }
               else if($this->moderator['status'] == 2)
               {
                 if($userMessage == "3" or strtolower($userMessage) == "mulai vote")
                 {
                   // change status in database
-                  $this->vote_m->changeStatus($status=3, $voteId);
+                  $status = 3;
+                  $this->vote_m->changeStatus($status, $voteId);
 
                   $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
                   $message .= "Kode untuk mengikuti proses voting : " . $vote['vote_id'];
@@ -220,7 +222,8 @@ class Webhook extends CI_Controller {
                   $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
 
                   // change status in database
-                  $this->vote_m->changeStatus($status=0, $voteId);
+                  $status = 0;
+                  $this->vote_m->changeStatus($status, $voteId);
 
                   if($event['source']['type'] == 'room')
                   {
