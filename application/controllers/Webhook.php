@@ -290,7 +290,7 @@ class Webhook extends CI_Controller {
             $multiMessageBuilder->add($textMessageBuilder2);
 
             // send reply message
-            $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+            $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
           }
           // check if incoming event is message
           // if($event['type'] == 'message')
