@@ -50,6 +50,9 @@ class Webhook extends CI_Controller {
         // get user profile
         $getProf = $this->bot->getProfile($event['source']['userId']);
         $profile = $getProf->getJSONDecodedBody();
+
+        $moderator = $this->checkModerator($event,$profile);
+        
         
         // if event type is follow (user add the bot)
         if($event['type'] == 'follow')
@@ -92,11 +95,16 @@ class Webhook extends CI_Controller {
         else
         {
           $test = $event['message']['text'];
+          $source = $this->checkSource($event);
           $sourceId = $this->checkSourceId($event);
-          if(strtolower($test) == "leave")
+          if($source == 'room')
           {
-            $this->leave($event, $sourceId);
+            if(strtolower($test) == "leave")
+            {
+              $this->leave($event, $sourceId);
+            } 
           }
+          
         }
 
         // // if events source come from room
@@ -519,7 +527,22 @@ class Webhook extends CI_Controller {
     }
 
   }*/
-
+  private function checkSource($event)
+  {
+    if($event['source']['type'] == 'room')
+    {
+      $source = 'room';
+    }
+    else if($event['source']['type'] == 'group')
+    {
+      $source = 'group';
+    }
+    else if($event['source']['type'] == 'user')
+    {
+      $source = 'user';
+    }
+    return $source;
+  }
   private function checkSourceId($event)
   {
     if($event['source']['type'] == 'room')
@@ -535,6 +558,31 @@ class Webhook extends CI_Controller {
       $sourceId = $event['source']['userId'];
     }
     return $sourceId;
+  }
+
+  private function checkModerator($event , $profile)
+  {
+    // check if user is moderator or not
+    $this->moderator = $this->vote_m->checkMod($event['source']['roomId']);
+
+    // if moderator doesn't exist
+    if(! $this->moderator)
+    {
+        // generate vote id
+        $voteId = $this->generateRandomString();
+
+        // save user as moderator
+        $mod = $event['source']['userId'];
+
+        // save vote id and user to database
+        $this->vote_m->saveMod($voteId,$profile,$roomId);
+
+        return $this->moderator;
+    }
+    else
+    {
+      return $this->moderator;
+    }
   }
 
   private function leave($event, $sourceId)
