@@ -109,7 +109,7 @@ class Webhook extends CI_Controller {
           // if user is moderator
           else if($this->moderator['user_id'] == $event['source']['userId'])
           {
-            $voteId = $this->vote_m->getVoteId($event['source']['userId'],$roomId);
+            $vote = $this->vote_m->getVote($event['source']['userId'],$roomId);
             // check if event type is message
             if($event['type'] == 'message')
             {
@@ -123,20 +123,20 @@ class Webhook extends CI_Controller {
               {
                 if($userMessage == '1' or strtolower($userMessage) == 'create vote')
                 {
-                  $message = "Masukkan judul untuk pemilihan ini". $voteId;
+                  $message = "Masukkan judul untuk pemilihan ini". $voteId['vote_id'];
                   $textMessageBuilder = new TextMessageBuilder($message);
 
                   $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
                   $status = 1;
                   // change status in database
-                  $this->vote_m->changeStatus($status, $voteId);
+                  $this->vote_m->changeStatus($status, $vote['vote_id']);
                 }
               }
               else if($this->moderator['status'] == 1)
               {
                 // add user message to database
-                $this->vote_m->addVoteTitle($userMessage , $voteId);
+                $this->vote_m->addVoteTitle($userMessage , $vote['vote_id']);
 
                 // bot send next assignment to user
                 $message = "Masukkan nama calon kandidat untuk pemilihan ini";
@@ -145,7 +145,7 @@ class Webhook extends CI_Controller {
                 $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
                 // change status in database
-                $this->vote_m->changeStatus($status=2, $voteId);
+                $this->vote_m->changeStatus($status=2, $voteId['vote_id']);
               }
               else if($this->moderator['status'] == 2)
               {
@@ -155,7 +155,7 @@ class Webhook extends CI_Controller {
                   $this->vote_m->changeStatus($status=3, $voteId);
 
                   $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
-                  $message .= "Kode untuk mengikuti proses voting : " . $voteId;
+                  $message .= "Kode untuk mengikuti proses voting : " . $vote['vote_id'];
                   $message .= "Akhiri voting dengan mengetikkan 'End Vote' pada chat";
 
                   $textMessageBuilder = new TextMessageBuilder($message);
@@ -166,11 +166,11 @@ class Webhook extends CI_Controller {
                 else
                 {
                   // add candidates to database
-                  $this->vote_m->addCandidate($userMessage, $voteId);
+                  $this->vote_m->addCandidate($userMessage, $vote['vote_id']);
 
                   $message = "List Kandidat";
                   // bot show the list of candidate to room
-                  $showList = $this->vote_m->getCandidateList($voteId);
+                  $showList = $this->vote_m->getCandidateList($vote['vote_id']);
                   $rowNum = 0;
                   foreach($showList as $row)
                   {
@@ -309,7 +309,8 @@ class Webhook extends CI_Controller {
               // else, probably user submit his vote
               else
               {
-                $voteId = $this->vote_m->getDetailAction($event['source']['userId']);
+                $voteId = $this->user['detail_action'];
+                //$voteId = $this->vote_m->getDetailAction($event['source']['userId']);
                 $this->vote_m->submitVote($voteId,$userMessage);
                 $action = "none";
                 $this->vote_m->updateAction($action,$event['source']['userId']);

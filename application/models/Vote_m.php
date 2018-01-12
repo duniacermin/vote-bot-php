@@ -53,7 +53,7 @@ class Vote_m extends CI_Model {
     }
   }
 
-  function getVoteId($userId,$roomId)
+  function getVote($userId,$roomId)
   {
     $data = $this->db->select('vote_id')
     ->where('user_id', $userId)
@@ -220,7 +220,7 @@ class Vote_m extends CI_Model {
     $data = $this->db->where('votes = (SELECT MAX(votes) FROM vote_contain)',NULL,FALSE)
     ->where('vote_id', $voteId)
     ->get('vote_contain')
-    ->result();
+    ->result_array();
 
     if(count($data) > 0) 
     {
