@@ -265,7 +265,18 @@ class Webhook extends CI_Controller {
         }
         else if($event['source']['type'] == 'user')
         {
-          // bot send welcome message
+          
+          // $message = "halo";
+          // $textMessageBuilder = new TextMessageBuilder($message);
+
+          // $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
+
+          $this->user = $this->vote_m->getUser($event['source']['userId']);
+          if(! $this->user)
+          {
+            // save user
+            $this->vote_m->saveUser($profile);
+            // bot send welcome message
             $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
             $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
             $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
@@ -280,16 +291,6 @@ class Webhook extends CI_Controller {
 
             // send reply message
             $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-          //$message = "halo";
-          $textMessageBuilder = new TextMessageBuilder($message);
-
-          $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-
-          $this->user = $this->vote_m->getUser($event['source']['userId']);
-          if(! $this->user)
-          {
-            // save user
-            $this->vote_m->saveUser($profile);
           }
           // check if incoming event is message
           // if($event['type'] == 'message')
