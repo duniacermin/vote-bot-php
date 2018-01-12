@@ -263,9 +263,19 @@ class Webhook extends CI_Controller {
           }
 
         }
-        else
+        else if($event['source']['type'] == 'user')
         {
+          $message = "halo";
+          $textMessageBuilder = new TextMessageBuilder($message);
+
+          $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
+
           $this->user = $this->vote_m->getUser($event['source']['userId']);
+          if(! $this->user)
+          {
+            // save user
+            $this->vote_m->saveUser($profile);
+          }
           // check if incoming event is message
           if($event['type'] == 'message')
           {
@@ -350,8 +360,7 @@ class Webhook extends CI_Controller {
             // send reply message
             $this->$bot->replyMessage($event['replyToken'], $multiMessageBuilder);
 
-            // save user
-            $this->vote_m->saveUser($profile);
+            
           }
         }
 
