@@ -37,10 +37,10 @@ class Vote_m extends CI_Model {
     return $this->db->insert_id();
   }
 
-  function changeStatus($status,$voteId)
+  function changeStatus($status,$vote)
   {
     $data = $this->db->set('status',$status)
-    ->where('vote_id',$voteId)
+    ->where('vote_id',$vote)
     ->update('vote');
 
     if($this->db->affected_rows() > 0)
@@ -65,9 +65,9 @@ class Vote_m extends CI_Model {
     return false;
   }
 
-  function getDetailVote($voteId)
+  function getDetailVote($vote)
   {
-    $data = $this->db->where('vote_id', $voteId)
+    $data = $this->db->where('vote_id', $vote)
     ->get('vote')
     ->row_array();
 
@@ -91,10 +91,10 @@ class Vote_m extends CI_Model {
     }
   }
 
-  function addVoteTitle($userMessage)
+  function addVoteTitle($userMessage, $vote)
   {
     $data = $this->db->set('title',$userMessage)
-    ->where('vote_id', $voteId)
+    ->where('vote_id', $vote)
     ->update('vote');
     if($this->db->affected_rows() > 0)
     {
@@ -106,18 +106,18 @@ class Vote_m extends CI_Model {
     }
   }
 
-  function addCandidate($candidate, $voteId)
+  function addCandidate($candidate, $vote)
   {
-    $data = $this->db->set('vote_id', $vote_id)
+    $data = $this->db->set('vote_id', $vote)
     ->set('candidates', $candidate)
     ->insert('vote_contain');
 
     return $this->db->insert_id();
   }
 
-  function getCandidateList($voteId)
+  function getCandidateList($vote)
   {
-    $data = $this->db->where('vote_id', $voteId)
+    $data = $this->db->where('vote_id', $vote)
     ->get('vote_contain');
 
     return $data->result_array();
@@ -197,10 +197,10 @@ class Vote_m extends CI_Model {
     }
   }
 
-  function submitVote($voteId,$userMessage)
+  function submitVote($vote,$userMessage)
   {
     $data = $this->db->set('votes = votes + 1')
-    ->where('vote_id', $voteId)
+    ->where('vote_id', $vote)
     ->where('candidates', $userMessage)
     ->update('vote_contain');
 
@@ -215,10 +215,10 @@ class Vote_m extends CI_Model {
 
   }
 
-  function getWinner($voteId)
+  function getWinner($vote)
   {
     $data = $this->db->where('votes = (SELECT MAX(votes) FROM vote_contain)',NULL,FALSE)
-    ->where('vote_id', $voteId)
+    ->where('vote_id', $vote)
     ->get('vote_contain')
     ->result_array();
 

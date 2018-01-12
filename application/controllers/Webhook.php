@@ -146,7 +146,7 @@ class Webhook extends CI_Controller {
 
                 $status = 2;
                 // change status in database
-                $this->vote_m->changeStatus($status, $voteId['vote_id']);
+                $this->vote_m->changeStatus($status, $vote['vote_id']);
               }
               else if($this->moderator['status'] == 2)
               {
@@ -154,7 +154,7 @@ class Webhook extends CI_Controller {
                 {
                   // change status in database
                   $status = 3;
-                  $this->vote_m->changeStatus($status, $voteId);
+                  $this->vote_m->changeStatus($status, $vote['vote_id']);
 
                   $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
                   $message .= "Kode untuk mengikuti proses voting : " . $vote['vote_id'];
@@ -192,8 +192,8 @@ class Webhook extends CI_Controller {
                 {
                   $message = "Hasil Voting";
                   // bot show the list of candidate to room
-                  $winner = $this->vote_m->getWinner($voteId);
-                  $showList = $this->vote_m->getCandidateList($voteId);
+                  $winner = $this->vote_m->getWinner($vote['vote_id']);
+                  $showList = $this->vote_m->getCandidateList($vote['vote_id']);
                   $rowNum = 0;
                   $total = 0;
                   foreach($showList as $row)
@@ -223,7 +223,7 @@ class Webhook extends CI_Controller {
 
                   // change status in database
                   $status = 0;
-                  $this->vote_m->changeStatus($status, $voteId);
+                  $this->vote_m->changeStatus($status, $vote['vote_id']);
 
                   if($event['source']['type'] == 'room')
                   {
