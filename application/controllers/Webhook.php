@@ -50,6 +50,50 @@ class Webhook extends CI_Controller {
         // get user profile
         $getProf = $this->bot->getProfile($event['source']['userId']);
         $profile = $getProf->getJSONDecodedBody();
+        
+        // if event type is follow (user add the bot)
+        if($event['type'] == 'follow')
+        {
+          // bot send welcome message
+          $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+          $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
+          $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
+          $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
+          $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+
+          $textMessageBuilder = new TextMessageBuilder($message);
+          $textMessageBuilder2 = new TextMessageBuilder($message2);
+          $multiMessageBuilder = new MultiMessageBuilder();
+          $multiMessageBuilder->add($textMessageBuilder);
+          $multiMessageBuilder->add($textMessageBuilder2);
+
+          // send reply message
+          $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+        }
+        // if event type is join (bot join group or room)
+        else if($event['type'] == 'join')
+        {
+          // bot send welcome message
+          $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+          $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
+          $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
+          $message2 = "Ketik 1 untuk membuat voting";
+
+          $textMessageBuilder = new TextMessageBuilder($message);
+          $textMessageBuilder2 = new TextMessageBuilder($message2);
+          $multiMessageBuilder = new MultiMessageBuilder();
+          $multiMessageBuilder->add($textMessageBuilder);
+          $multiMessageBuilder->add($textMessageBuilder2);
+
+          // send reply message
+          $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+        }
+        // event type probably is message
+        else
+        {
+
+        }
+        
         // if events source come from room
         if($event['source']['type'] == 'group' or $event['source']['type'] == 'room')
         {
@@ -227,7 +271,7 @@ class Webhook extends CI_Controller {
 
                   if($event['source']['type'] == 'room')
                   {
-                    $this->bot->leaveGroup($event['source']['roomId']);
+                    $this->bot->leaveRoom($event['source']['roomId']);
                   }
                   else
                   {
@@ -308,10 +352,10 @@ class Webhook extends CI_Controller {
 
               $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
 
-              $action = "join";
+              $action = 'join';
               $this->vote_m->updateAction($action,$event['source']['userId']);
             }
-            else if($this->user['action'] == "join")
+            else if($this->user['action'] == 'join')
             {
               // match ref code with vote id in db
               $message = "halo";
@@ -361,6 +405,13 @@ class Webhook extends CI_Controller {
                 $multiMessageBuilder->add($textMessageBuilder2);
 
                 $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+              }
+              else
+              {
+                $message = "hehe";
+                $textMessageBuilder = new TextMessageBuilder($message);
+                $this->bot->replyMessage($message);
+                $match = $this->vote_m->matchVoteId($userMessage);
               }
             }
           //}
