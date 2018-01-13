@@ -72,6 +72,9 @@ class Webhook extends CI_Controller {
           // if message come from room or group
           else if($source == 'room' || $source == 'group')
           {
+            $testingRo = "testro";
+            $textMessageBuilder = new TextMessageBuilder($testingRo);
+            $this->bot->replyMessage($textMessageBuilder); 
             // check if user is moderator or not
             $this->moderator = $this->vote_m->checkMod($sourceId);
 
@@ -103,6 +106,9 @@ class Webhook extends CI_Controller {
 
             else
             {
+                $testingEl = "testel";
+            $textMessageBuilder = new TextMessageBuilder($testingel);
+            $this->bot->replyMessage($textMessageBuilder); 
                 // only moderator can request
                 if($this->moderator['user_id'] == $event['source']['userId'] )
                 {
