@@ -55,8 +55,7 @@ class Vote_m extends CI_Model {
 
   function getVote($userId,$roomId)
   {
-    $data = $this->db->select('vote_id')
-    ->where('user_id', $userId)
+    $data = $this->db->where('user_id', $userId)
     ->where('room_id',$roomId)
     ->get('vote')
     ->row_array();
