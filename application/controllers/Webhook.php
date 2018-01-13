@@ -733,9 +733,9 @@ class Webhook extends CI_Controller {
   private function missingModerator($event)
   {
     $message = 'Moderator belum ditemukan.';
-    $message2 .= 'Ajukan diri sebagai moderator dengan mengetik "mod" pada kolom chat';
+    $message2 = 'Ajukan diri sebagai moderator dengan mengetik "mod" pada kolom chat';
     $textMessageBuilder = new TextMessageBuilder($message);
-    $textMessageBuilder2 = new TextMessageBuilder2($message2);
+    $textMessageBuilder2 = new TextMessageBuilder($message2);
     $multiMessageBuilder = new MultiMessageBuilder();
     $multiMessageBuilder->add($textMessageBuilder);
     $multiMessageBuilder->add($textMessageBuilder2);
