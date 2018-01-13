@@ -152,7 +152,7 @@ class Webhook extends CI_Controller {
                         else if($this->moderator['status'] == 1)
                         {
                             // add user message to database
-                            $this->vote_m->addVoteTitle($userMessage , $this->moderator['vote_id']);
+                            $this->vote_m->addVoteTitle($test , $this->moderator['vote_id']);
 
                             // bot send next assignment to user
                             $message = "Masukkan nama calon kandidat untuk pemilihan ini";
@@ -166,7 +166,7 @@ class Webhook extends CI_Controller {
                         }
                         else if($this->moderator['status'] == 2)
                         {
-                            if($userMessage == "3" or strtolower($userMessage) == "mulai vote")
+                            if($test == "3" or strtolower($test) == "mulai vote")
                             {
                                 // change status in database
                                 $status = 3;
@@ -184,7 +184,7 @@ class Webhook extends CI_Controller {
                              else
                              {
                                 // add candidates to database
-                                $this->vote_m->addCandidate($userMessage, $this->moderator['vote_id']);
+                                $this->vote_m->addCandidate($test, $this->moderator['vote_id']);
 
                                 $message = "List Kandidat\n";
                                 // bot show the list of candidate to room
