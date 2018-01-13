@@ -81,23 +81,23 @@ class Webhook extends CI_Controller {
             // if moderator not found
             if(! $this->moderator)
             {
-                $testing = "test";
-                $textMessageBuilder = new TextMessageBuilder($testing);
-                $this->bot->replyMessage($textMessageBuilder);
+                // $testing = "test";
+                // $textMessageBuilder = new TextMessageBuilder($testing);
+                // $this->bot->replyMessage($textMessageBuilder);
                 // if someone volunteering as moderator
                 if(strtolower($test) == "mod")
                 {
-                    $testing3 = "test3";
-                    $textMessageBuilder = new TextMessageBuilder($testing3);
-                    $this->bot->replyMessage($textMessageBuilder);
+                    // $testing3 = "test3";
+                    // $textMessageBuilder = new TextMessageBuilder($testing3);
+                    // $this->bot->replyMessage($textMessageBuilder);
                     // save data user to database
                     $this->saveModerator($event, $profile, $sourceId);    
                 }
                 else
                 {
-                    $testing2 = "test2";
-                    $textMessageBuilder = new TextMessageBuilder($testing2);
-                    $this->bot->replyMessage($textMessageBuilder);
+                    // $testing2 = "test2";
+                    // $textMessageBuilder = new TextMessageBuilder($testing2);
+                    // $this->bot->replyMessage($textMessageBuilder);
                     // bot send message saying moderator is not found
                     $this->missingModerator($event);    
                 }
@@ -106,9 +106,9 @@ class Webhook extends CI_Controller {
 
             else
             {
-                $testingEl = "testel";
-            $textMessageBuilder = new TextMessageBuilder($testingel);
-            $this->bot->replyMessage($textMessageBuilder); 
+            //     $testingEl = "testel";
+            // $textMessageBuilder = new TextMessageBuilder($testingel);
+            // $this->bot->replyMessage($textMessageBuilder); 
                 // only moderator can request
                 if($this->moderator['user_id'] == $event['source']['userId'] )
                 {
