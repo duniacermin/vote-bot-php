@@ -65,9 +65,12 @@ class Webhook extends CI_Controller {
           $test = $event['message']['text'];
           $source = $this->checkSource($event);
           $sourceId = $this->checkSourceId($event);
-
+          if(strtolower($test) == "leave")
+                    {
+                        $this->leave($event, $sourceId);
+                    }
           // if message come from room or group
-          if($source == 'room' || $source == 'group')
+          else if($source == 'room' || $source == 'group')
           {
             // check if user is moderator or not
             $this->moderator = $this->vote_m->checkMod($sourceId);
@@ -75,14 +78,23 @@ class Webhook extends CI_Controller {
             // if moderator not found
             if(! $this->moderator)
             {
+                $testing = "test";
+                $textMessageBuilder = new TextMessageBuilder($testing);
+                $this->bot->replyMessage($textMessageBuilder);
                 // if someone volunteering as moderator
                 if(strtolower($test) == "mod")
                 {
+                    $testing3 = "test3";
+                    $textMessageBuilder = new TextMessageBuilder($testing3);
+                    $this->bot->replyMessage($textMessageBuilder);
                     // save data user to database
                     $this->saveModerator($event, $profile, $sourceId);    
                 }
                 else
                 {
+                    $testing2 = "test2";
+                    $textMessageBuilder = new TextMessageBuilder($testing2);
+                    $this->bot->replyMessage($textMessageBuilder);
                     // bot send message saying moderator is not found
                     $this->missingModerator($event);    
                 }
@@ -645,7 +657,7 @@ class Webhook extends CI_Controller {
     // bot send welcome message
     $message = "Salam kenal semuanya :) \n";
     $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
-    $message .= "Saya akan membantu kalian untuk dalam proses voting :) \n\n";
+    $message .= "\n\n Saya akan membantu kalian untuk dalam proses voting :) ";
     $message2 = "Ajukan salah satu dari kalian sebagai moderator terlebih dahulu :)";
 
     $textMessageBuilder = new TextMessageBuilder($message);
