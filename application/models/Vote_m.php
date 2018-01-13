@@ -235,7 +235,7 @@ class Vote_m extends CI_Model {
   function deleteVote($sourceId)
   {
     $id = $this->db->where('room_id',$sourceId)
-    ->get('vote');
+    ->get('vote')
     ->result_array();
 
     $deleteId = $id['vote_id'];
