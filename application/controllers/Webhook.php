@@ -774,6 +774,9 @@ class Webhook extends CI_Controller {
 
   private function leave($event, $sourceId)
   {
+    //delete data from database
+    $this->vote_m->deleteVote($sourceId);
+
     if($event['source']['type'] == 'room')
     {
       $this->bot->leaveRoom($sourceId);
