@@ -813,7 +813,7 @@ class Webhook extends CI_Controller {
                 $rowNum++;
             }
 
-            $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat."
+            $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat.";
             $message .= "\n contoh: remove budi";
             $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
             $this->sendMessage($event, $message);
