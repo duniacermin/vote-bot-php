@@ -117,6 +117,7 @@ class Vote_m extends CI_Model {
   function removeCandidate($candidate, $vote)
   {
     $data = $this->db->where('vote_id', $vote)
+    ->where('candidates', $candidate)
     ->delete('vote_contain');
 
     if($this->db->affected_rows() > 0)

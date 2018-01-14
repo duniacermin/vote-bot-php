@@ -182,7 +182,7 @@ class Webhook extends CI_Controller {
                                 //then, user can join voting by put the code on private chat with bot
                             }
                             // moderator add candidate to list
-                            else if(strpos($test,'add') !== false)
+                            else if(strpos(strtolower($test),'add') !== false)
                             {
                                 $candidate = str_replace('add ', '', $test);
 
@@ -206,7 +206,7 @@ class Webhook extends CI_Controller {
 
                             }
                             // moderator remove candidate from list
-                            else if(strpos($test,'remove') !== false)
+                            else if(strpos(strtolower($test),'remove') !== false)
                             {
                                 $candidate = str_replace('remove ','', $test);
                                 // remove candidate from list
