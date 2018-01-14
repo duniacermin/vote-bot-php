@@ -166,7 +166,8 @@ class Webhook extends CI_Controller {
                         }
                         else if($this->moderator['status'] == 2)
                         {
-                            if($test == "3" or strtolower($test) == "mulai vote")
+                            $lowerMessage = strtolower($test);
+                            if($test == "3" or $lowerMessage == "mulai vote")
                             {
                                 // change status in database
                                 $status = 3;
@@ -182,7 +183,7 @@ class Webhook extends CI_Controller {
                                 //then, user can join voting by put the code on private chat with bot
                             }
                             // moderator add candidate to list
-                            else if(strpos(strtolower($test),'add') !== false)
+                            else if(strpos($lowerMessage,'add') !== false)
                             {
                                 $candidate = str_replace('add ', '', $test);
 
@@ -206,7 +207,7 @@ class Webhook extends CI_Controller {
 
                             }
                             // moderator remove candidate from list
-                            else if(strpos(strtolower($test),'remove') !== false)
+                            else if(strpos($lowerMessage,'remove') !== false)
                             {
                                 $candidate = str_replace('remove ','', $test);
                                 // remove candidate from list
@@ -226,7 +227,7 @@ class Webhook extends CI_Controller {
                               
                                 $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
                             }
-                            else if(strtolower($test) == 'list')
+                            else if($lowerMessage == 'list')
                             {
                                 $message = "List Kandidat\n";
                                 // bot show the list of candidate to room
