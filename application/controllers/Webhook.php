@@ -171,7 +171,7 @@ class Webhook extends CI_Controller {
                             {
                                 // change status in database
                                 $status = 3;
-                                $this->vote_m->changeStatus($status, $vote['vote_id']);
+                                $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
 
                                 $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
                                 $message .= "Kode untuk mengikuti proses voting : " . $this->moderator['vote_id'];
