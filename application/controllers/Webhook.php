@@ -187,7 +187,7 @@ class Webhook extends CI_Controller {
                                 $candidate = str_replace('add ', '', $test);
 
                                 // add candidates to database
-                                $this->vote_m->addCandidate($test, $this->moderator['vote_id']);
+                                $this->vote_m->addCandidate($candidate, $this->moderator['vote_id']);
 
                                 $message = "List Kandidat\n";
                                 // bot show the list of candidate to room
@@ -210,7 +210,7 @@ class Webhook extends CI_Controller {
                             {
                                 $candidate = str_replace('remove ','', $test);
                                 // remove candidate from list
-                                $this->vote_m->removeCandidate($test, $this->moderator['vote_id']);
+                                $this->vote_m->removeCandidate($candidate, $this->moderator['vote_id']);
                                 $message = "List Kandidat\n";
                                 // bot show the list of candidate to room
                                 $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
