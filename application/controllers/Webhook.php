@@ -113,7 +113,7 @@ class Webhook extends CI_Controller {
                 // only moderator can request
                 if($this->moderator['user_id'] == $event['source']['userId'] )
                 {
-                    $vote = $this->vote_m->getVote($event['source']['userId'],$roomId);
+                    //$vote = $this->vote_m->getVote($event['source']['userId'],$sourceId);
                     
                     if(strtolower($userMessage) == "leave")
                     {
