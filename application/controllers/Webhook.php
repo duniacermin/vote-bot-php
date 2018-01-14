@@ -836,7 +836,7 @@ class Webhook extends CI_Controller {
             $total = 0;
             foreach($showList as $row)
             {
-                $message .= $rowNum . ". " . $row['candidates'] . " = " . $row['votes'] . "suara\n";
+                $message .= $rowNum . ". " . $row['candidates'] . " = " . $row['votes'] . " suara\n";
                 $rowNum++;
             }
             foreach($winner as $win)
