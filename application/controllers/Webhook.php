@@ -699,7 +699,7 @@ class Webhook extends CI_Controller {
     return $randomString;
   }
 
-  private function manageVote($event, $moderator, $userMessage , $sourceId)
+  private function manageVote($event, $moderator, $userMessage, $sourceId)
   {
     // check status of moderator
     // 0 : Haven't done anything or Vote Ended
