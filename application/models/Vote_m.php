@@ -114,6 +114,21 @@ class Vote_m extends CI_Model {
     return $this->db->insert_id();
   }
 
+  function removeCandidate($candidate, $vote)
+  {
+    $data = $this->db->where('vote_id', $vote)
+    ->delete('vote_contain');
+
+    if($this->db->affected_rows() > 0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   function getCandidateList($vote)
   {
     $data = $this->db->where('vote_id', $vote)
