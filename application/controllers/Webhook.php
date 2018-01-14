@@ -51,9 +51,6 @@ class Webhook extends CI_Controller {
         $getProf = $this->bot->getProfile($event['source']['userId']);
         $profile = $getProf->getJSONDecodedBody();
 
-        //$moderator = $this->checkModerator($event,$profile);
-        
-        
         // if event type is follow (user add the bot)
         if($event['type'] == 'follow' || $event['type'] == 'join')
         {
@@ -73,32 +70,20 @@ class Webhook extends CI_Controller {
           // if message come from room or group
           else if($source == 'room' || $source == 'group')
           {
-            // $testingRo = "testro";
-            // $textMessageBuilder = new TextMessageBuilder($testingRo);
-            // $this->bot->replyMessage($textMessageBuilder); 
             // check if user is moderator or not
             $this->moderator = $this->vote_m->checkMod($sourceId);
 
             // if moderator not found
             if(! $this->moderator)
             {
-                // $testing = "test";
-                // $textMessageBuilder = new TextMessageBuilder($testing);
-                // $this->bot->replyMessage($textMessageBuilder);
                 // if someone volunteering as moderator
                 if(strtolower($userMessage) == "mod")
                 {
-                    // $testing3 = "test3";
-                    // $textMessageBuilder = new TextMessageBuilder($testing3);
-                    // $this->bot->replyMessage($textMessageBuilder);
                     // save data user to database
                     $this->saveModerator($event, $profile, $sourceId);    
                 }
                 else
                 {
-                    // $testing2 = "test2";
-                    // $textMessageBuilder = new TextMessageBuilder($testing2);
-                    // $this->bot->replyMessage($textMessageBuilder);
                     // bot send message saying moderator is not found
                     $this->missingModerator($event);    
                 }
@@ -107,195 +92,16 @@ class Webhook extends CI_Controller {
 
             else
             {
-            //     $testingEl = "testel";
-            // $textMessageBuilder = new TextMessageBuilder($testingel);
-            // $this->bot->replyMessage($textMessageBuilder); 
                 // only moderator can request
                 if($this->moderator['user_id'] == $event['source']['userId'] )
-                {
-                    //$vote = $this->vote_m->getVote($event['source']['userId'],$sourceId);
-                    
+                {   
                     if(strtolower($userMessage) == "leave")
                     {
                         $this->leave($event, $sourceId);
                     }
                     else
                     {
-                        // check status of moderator
-                        // 0 : Haven't done anything or Vote Ended
-                        // 1 : Enter Title of Voting
-                        // 2 : Add Candidates
-                        // 3 : Begin Vote
-                        if($this->moderator['status'] == 0)
-                        {
-                            // enter title of voting
-                            if($userMessage == '1' || $userMessage == 'begin vote')
-                            {
-                                $message = "Masukkan judul untuk pemilihan ini";
-                                $textMessageBuilder = new TextMessageBuilder($message);
-
-                                $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-
-                                $status = 1;
-                                // change status in database
-                                $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
-                            }
-                            // reminder to moderator to type in chatbox
-                            else
-                            {
-                                $message = "Hai" . $profile['displayName']. ". Kamu adalah moderator.\n";
-                                $message = 'Ketik "1" untuk memulai voting';
-                                $textMessageBuilder = new TextMessageBuilder($message);
-
-                                $this->bot->replyMessage($event['replyToken'],$message);
-                            }
-                        }
-                        else if($this->moderator['status'] == 1)
-                        {
-                            // add user message to database
-                            $this->vote_m->addVoteTitle($test , $this->moderator['vote_id']);
-
-                            // bot send next assignment to user
-                            $message = "Masukkan nama calon kandidat untuk pemilihan ini";
-                            $textMessageBuilder = new TextMessageBuilder($message);
-
-                            $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-
-                            $status = 2;
-                            // change status in database
-                            $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
-                        }
-                        else if($this->moderator['status'] == 2)
-                        {
-                            if($userMessage == "3" or $userMessage == "mulai vote")
-                            {
-                                // change status in database
-                                $status = 3;
-                                $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
-
-                                $message = "Voting dimulai. Voting akan berakhir saat ". $this->moderator['displayName'] ." mengakhiri waktu voting.\n\n";
-                                $message .= "Kode untuk mengikuti proses voting : " . $this->moderator['vote_id'];
-                                $message .= "\n\nAkhiri voting dengan mengetikkan 'End Vote' pada chat";
-
-                                $textMessageBuilder = new TextMessageBuilder($message);
-                                $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-
-                                //then, user can join voting by put the code on private chat with bot
-                            }
-                            // moderator add candidate to list
-                            else if(strpos($userMessage,'add') !== false)
-                            {
-                                $candidate = str_replace('add ', '', $userMessage);
-
-                                // add candidates to database
-                                $this->vote_m->addCandidate($candidate, $this->moderator['vote_id']);
-
-                                $message = "List Kandidat\n";
-                                // bot show the list of candidate to room
-                                $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
-                                $rowNum = 1;
-                                foreach($showList as $row)
-                                {
-                                    $message .= $rowNum . ". " . $row['candidates'] . "\n";
-                                    $rowNum++;
-                                }
-
-                                $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
-                                $textMessageBuilder = new TextMessageBuilder($message);
-                              
-                                $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-
-                            }
-                            // moderator remove candidate from list
-                            else if(strpos($userMessage,'remove') !== false)
-                            {
-                                $candidate = str_replace('remove ','', $userMessage);
-                                // remove candidate from list
-                                $this->vote_m->removeCandidate($candidate, $this->moderator['vote_id']);
-                                $message = "List Kandidat\n";
-                                // bot show the list of candidate to room
-                                $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
-                                $rowNum = 1;
-                                foreach($showList as $row)
-                                {
-                                    $message .= $rowNum . ". " . $row['candidates'] . "\n";
-                                    $rowNum++;
-                                }
-
-                                $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
-                                $textMessageBuilder = new TextMessageBuilder($message);
-                              
-                                $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-                            }
-                            else if($userMessage == 'list')
-                            {
-                                $message = "List Kandidat\n";
-                                // bot show the list of candidate to room
-                                $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
-                                $rowNum = 1;
-                                foreach($showList as $row)
-                                {
-                                    $message .= $rowNum . ". " . $row['candidates'] . "\n";
-                                    $rowNum++;
-                                }
-
-                                $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
-                                $textMessageBuilder = new TextMessageBuilder($message);
-                              
-                                $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
-                            }
-                            else
-                            {
-                                return 0;
-                            }
-                        }
-                        else if($this->moderator['status'] == 3)
-                        {
-                            if($userMessage == 'end vote')
-                            {
-                                $message = "Hasil Voting";
-                                // bot show the list of candidate to room
-                                $winner = $this->vote_m->getWinner($this->moderator['vote_id']);
-                                $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
-                                $rowNum = 0;
-                                $total = 0;
-                                foreach($showList as $row)
-                                {
-                                    $message .= $rowNum . ". " . $row['candidates'] . "= " . $row['votes'] . "suara";
-                                    $rowNum++;
-                                }
-                                foreach($winner as $win)
-                                {
-                                    $message .= "\n\n Selamat " . $win['candidates'] . "karena telah memenangkan voting dengan total suara sebanyak " .$row['votes']." suara :)";
-                                    $total += 1;
-                                }
-                                if($total > 1)
-                                {
-                                    $message .= "\n\nDikarenakan terdapat lebih dari 1 pemenang, maka disarankan untuk melakukan voting ulang :)";
-                                } 
-
-                                $message2 = "Terima kasih kepada semua yang telah ikut berpartisipasi :)";
-
-                                $textMessageBuilder = new TextMessageBuilder($message);
-                                $textMessageBuilder2 = new TextMessageBuilder($message);
-                                $multiMessageBuilder = new MultiMessageBuilder();
-                                $multiMessageBuilder->add($textMessageBuilder);
-                                $multiMessageBuilder->add($textMessageBuilder2);
-
-                                $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-
-                                // change status in database
-                                $status = 0;
-                                $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
-
-                                // bot leave the room
-                                $this->leave($event, $sourceId);
-                            }
-                            else
-                            {
-                                return 0;
-                            }
-                        }
+                        $this->manageVote($event, $this->moderator, $userMessage);
                     }
                 }
                 // another user message
@@ -733,42 +539,50 @@ class Webhook extends CI_Controller {
 
   }*/
 
-  private function followCallback($event)
-  {
-    // bot send welcome message
-    $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
-    $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
-    $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
-    $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
-    $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+    private function followCallback($event)
+    {
+        // bot send welcome message
+        $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
+        $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
+        $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
+        $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
+        $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
 
-    $textMessageBuilder = new TextMessageBuilder($message);
-    $textMessageBuilder2 = new TextMessageBuilder($message2);
-    $multiMessageBuilder = new MultiMessageBuilder();
-    $multiMessageBuilder->add($textMessageBuilder);
-    $multiMessageBuilder->add($textMessageBuilder2);
+        $this->sendMessage2($event, $message, $message2);
 
-    // send reply message
-    $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-  }
+        // send reply message
+        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+    }
 
-  private function joinCallback($event)
-  {
-    // bot send welcome message
-    $message = "Salam kenal semuanya :) \n";
-    $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
-    $message .= "\n\n Saya akan membantu kalian untuk dalam proses voting :) ";
-    $message2 = "Ajukan salah satu dari kalian sebagai moderator terlebih dahulu :)";
+    private function joinCallback($event)
+    {
+        // bot send welcome message
+        $message = "Salam kenal semuanya :) \n";
+        $message .= "Terima kasih telah mengundang saya kedalam grup ini \n";
+        $message .= "\n\nSaya akan membantu kalian untuk dalam proses voting :) ";
+        $message2 = "Ajukan salah satu dari kalian sebagai moderator terlebih dahulu :)";
+        $message2 = "Ketik 'mod' pada kolom chat untuk mengajukan diri";
 
-    $textMessageBuilder = new TextMessageBuilder($message);
-    $textMessageBuilder2 = new TextMessageBuilder($message2);
-    $multiMessageBuilder = new MultiMessageBuilder();
-    $multiMessageBuilder->add($textMessageBuilder);
-    $multiMessageBuilder->add($textMessageBuilder2);
+        $this->sendMessage2($event, $message, $message2);
+    }
 
-    // send reply message
-    $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-  }
+    private function sendMessage($event, $message)
+    {
+        $textMessageBuilder = new TextMessageBuilder($message);
+        $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+    }
+
+    private function sendMessage2($event, $message, $message2)
+    {
+        $textMessageBuilder = new TextMessageBuilder($message);
+        $textMessageBuilder2 = new TextMessageBuilder($message2);
+        $multiMessageBuilder = new MultiMessageBuilder();
+        $multiMessageBuilder->add($textMessageBuilder);
+        $multiMessageBuilder->add($textMessageBuilder2);
+
+        // send reply message
+        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+    }
 
   private function checkSource($event)
   {
@@ -814,27 +628,17 @@ class Webhook extends CI_Controller {
 
     // bot send message
     $message = $profile['displayName'] . " mengajukan diri sebagai moderator";
-    $message2 = "\n\nMulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
-    $textMessageBuilder = new TextMessageBuilder($message);
-    $textMessageBuilder2 = new TextMessageBuilder($message2);
-    $multiMessageBuilder = new MultiMessageBuilder();
-    $multiMessageBuilder->add($textMessageBuilder);
-    $multiMessageBuilder->add($textMessageBuilder2);
-
-    $this->bot->replyMessage($event['replyToken'],$multiMessageBuilder);
+    $message2 = "Mulai voting dengan mengetikkan '1' atau 'create vote' pada kolom chat";
+    
+    $this->sendMessage2($event, $message, $message2);
   }
 
   private function missingModerator($event)
   {
     $message = 'Moderator belum ditemukan.';
     $message2 = 'Ajukan diri sebagai moderator dengan mengetik "mod" pada kolom chat';
-    $textMessageBuilder = new TextMessageBuilder($message);
-    $textMessageBuilder2 = new TextMessageBuilder($message2);
-    $multiMessageBuilder = new MultiMessageBuilder();
-    $multiMessageBuilder->add($textMessageBuilder);
-    $multiMessageBuilder->add($textMessageBuilder2);
-
-    $this->bot->replyMessage($event['replyToken'],$multiMessageBuilder);
+    
+    $this->sendMessage2($event, $message, $message2);
   }
 
   private function checkModerator($event , $profile ,$sourceId)
@@ -853,9 +657,8 @@ class Webhook extends CI_Controller {
 
         // bot send message
         $message = $profile['displayName'] . "mengajukan diri sebagai moderator";
-        $message2 = "\n\nMulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
-        $textMessageBuilder = new TextMessageBuilder($message);
-        $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
+        $message2 = "Mulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
+        $this->sendMessage2($event, $message, $message2);
 
         return $moderator;
     }
@@ -894,6 +697,175 @@ class Webhook extends CI_Controller {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
     return $randomString;
+  }
+
+  private function manageVote($event, $moderator, $userMessage)
+  {
+    // check status of moderator
+    // 0 : Haven't done anything or Vote Ended
+    // 1 : Enter Title of Voting
+    // 2 : Add Candidates
+    // 3 : Begin Vote
+    if($moderator['status'] == 0)
+    {
+        // enter title of voting
+        if($userMessage == '1' || $userMessage == 'create vote')
+        {
+            $message = "Masukkan judul untuk pemilihan ini";
+            $this->sendMessage($event, $message);
+
+            $status = 1;
+            // change status in database
+            $this->vote_m->changeStatus($status, $moderator['vote_id']);
+        }
+        // reminder to moderator to type in chatbox
+        else
+        {
+            $message = "Hai" . $profile['displayName']. ". Kamu adalah moderator.\n";
+            $message = 'Ketik "1" untuk memulai voting';
+            $this->sendMessage($event, $message);
+        }
+    }
+    else if($moderator['status'] == 1)
+    {
+        // add user message to database
+        $this->vote_m->addVoteTitle($userMessage , $moderator['vote_id']);
+
+        // bot send next assignment to user
+        $message = "Masukkan nama calon kandidat untuk pemilihan ini";
+        $message .= "\n\nformat : add (nama kandidat)";
+        $message .= "\ncontoh: add budi";
+        $this->sendMessage($event, $message);
+
+        $status = 2;
+        // change status in database
+        $this->vote_m->changeStatus($status, $moderator['vote_id']);
+    }
+    else if($this->moderator['status'] == 2)
+    {
+        if($userMessage == "3" or $userMessage == "mulai vote")
+        {
+            // change status in database
+            $status = 3;
+            $this->vote_m->changeStatus($status, $moderator['vote_id']);
+
+            $message = "Voting dimulai. Voting akan berakhir saat ". $moderator['displayName'] ." mengakhiri waktu voting.\n\n";
+            $message .= "Kode untuk mengikuti proses voting : " . $moderator['vote_id'];
+            $message .= "\n\nAkhiri voting dengan mengetikkan 'End Vote' pada chat";
+
+            $this->sendMessage($event, $message);
+
+            //then, user can join voting by put the code on private chat with bot
+        }
+        // moderator add candidate to list
+        else if(strpos($userMessage,'add') !== false)
+        {
+            $candidate = str_replace('add ', '', $userMessage);
+
+            // add candidates to database
+            $this->vote_m->addCandidate($candidate, $moderator['vote_id']);
+
+            $message = "List Kandidat\n";
+            // bot show the list of candidate to room
+            $showList = $this->vote_m->getCandidateList($moderator['vote_id']);
+            $rowNum = 1;
+            foreach($showList as $row)
+            {
+                $message .= $rowNum . ". " . $row['candidates'] . "\n";
+                $rowNum++;
+            }
+
+            $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat."
+            $message .= "\ncontoh: remove budi";
+            $message .= "\nKetik '3' atau 'begin vote' untuk memulai vote";
+            $this->sendMessage($event, $message);
+        }
+        // moderator remove candidate from list
+        else if(strpos($userMessage,'remove') !== false)
+        {
+            $candidate = str_replace('remove ','', $userMessage);
+            // remove candidate from list
+            $this->vote_m->removeCandidate($candidate, $moderator['vote_id']);
+            $message = "List Kandidat\n";
+            // bot show the list of candidate to room
+            $showList = $this->vote_m->getCandidateList($moderator['vote_id']);
+            $rowNum = 1;
+            foreach($showList as $row)
+            {
+                $message .= $rowNum . ". " . $row['candidates'] . "\n";
+                $rowNum++;
+            }
+
+            $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat."
+            $message .= "\n contoh: remove budi";
+            $message .= "\n\nKetik '3' atau 'begin vote' untuk memulai vote";
+            $this->sendMessage($event, $message);
+        }
+        else if($userMessage == 'list')
+        {
+            $message = "List Kandidat\n";
+            // bot show the list of candidate to room
+            $showList = $this->vote_m->getCandidateList($moderator['vote_id']);
+            $rowNum = 1;
+            foreach($showList as $row)
+            {
+                $message .= $rowNum . ". " . $row['candidates'] . "\n";
+                $rowNum++;
+            }
+
+            $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat."
+            $message .= "\n contoh: remove budi";
+            $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
+            $this->sendMessage($event, $message);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if($moderator['status'] == 3)
+    {
+        if($userMessage == 'end vote')
+        {
+            $message = $moderator['title'];
+            $message .= "\nHasil Voting\n";
+            // bot show the list of candidate to room
+            $winner = $this->vote_m->getWinner($moderator['vote_id']);
+            $showList = $this->vote_m->getCandidateList($moderator['vote_id']);
+            $rowNum = 1;
+            $total = 0;
+            foreach($showList as $row)
+            {
+                $message .= $rowNum . ". " . $row['candidates'] . "= " . $row['votes'] . "suara\n";
+                $rowNum++;
+            }
+            foreach($winner as $win)
+            {
+                $message .= "\n\nSelamat " . $win['candidates'] . " karena telah memenangkan voting dengan total suara sebanyak " .$row['votes']." suara :)";
+                $total += 1;
+            }
+            if($total > 1)
+            {
+                $message .= "\n\nDikarenakan terdapat lebih dari 1 pemenang, maka disarankan untuk melakukan voting ulang :)";
+            } 
+
+            $message2 = "Terima kasih kepada semua yang telah ikut berpartisipasi :)";
+
+            $this->sendMessage2($event, $message, $message2);
+
+            // change status in database
+            $status = 0;
+            $this->vote_m->changeStatus($status, $moderator['vote_id']);
+
+            // bot leave the room
+            $this->leave($event, $sourceId);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+                    
   }
 
 /*  private function stickerMessage($event){}
