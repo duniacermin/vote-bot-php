@@ -274,10 +274,10 @@ class Webhook extends CI_Controller {
                                     $message .= "\n\nDikarenakan terdapat lebih dari 1 pemenang, maka disarankan untuk melakukan voting ulang :)";
                                 } 
 
-                                $message2 .= "Terima kasih kepada semua yang telah ikut berpartisipasi :)";
+                                $message2 = "Terima kasih kepada semua yang telah ikut berpartisipasi :)";
 
                                 $textMessageBuilder = new TextMessageBuilder($message);
-                                $textMessageBuilder2 = new TextMessageBuilder2($message);
+                                $textMessageBuilder2 = new TextMessageBuilder($message);
                                 $multiMessageBuilder = new MultiMessageBuilder();
                                 $multiMessageBuilder->add($textMessageBuilder);
                                 $multiMessageBuilder->add($textMessageBuilder2);
