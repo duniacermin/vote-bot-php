@@ -62,13 +62,14 @@ class Webhook extends CI_Controller {
         // event type probably is message
         else
         {
-          $test = $event['message']['text'];
-          $source = $this->checkSource($event);
-          $sourceId = $this->checkSourceId($event);
-          if(strtolower($test) == "leave")
-                    {
-                        $this->leave($event, $sourceId);
-                    }
+            $test = $event['message']['text'];
+            $userMessage = strtolower($test);
+            $source = $this->checkSource($event);
+            $sourceId = $this->checkSourceId($event);
+            if(strtolower($userMessage) == "leave")
+            {
+                $this->leave($event, $sourceId);
+            }
           // if message come from room or group
           else if($source == 'room' || $source == 'group')
           {
@@ -85,7 +86,7 @@ class Webhook extends CI_Controller {
                 // $textMessageBuilder = new TextMessageBuilder($testing);
                 // $this->bot->replyMessage($textMessageBuilder);
                 // if someone volunteering as moderator
-                if(strtolower($test) == "mod")
+                if(strtolower($userMessage) == "mod")
                 {
                     // $testing3 = "test3";
                     // $textMessageBuilder = new TextMessageBuilder($testing3);
@@ -114,7 +115,7 @@ class Webhook extends CI_Controller {
                 {
                     $vote = $this->vote_m->getVote($event['source']['userId'],$roomId);
                     
-                    if(strtolower($test) == "leave")
+                    if(strtolower($userMessage) == "leave")
                     {
                         $this->leave($event, $sourceId);
                     }
@@ -128,7 +129,7 @@ class Webhook extends CI_Controller {
                         if($this->moderator['status'] == 0)
                         {
                             // enter title of voting
-                            if($test == '1' || strtolower($test) == 'begin vote')
+                            if($userMessage == '1' || $userMessage == 'begin vote')
                             {
                                 $message = "Masukkan judul untuk pemilihan ini";
                                 $textMessageBuilder = new TextMessageBuilder($message);
@@ -166,8 +167,7 @@ class Webhook extends CI_Controller {
                         }
                         else if($this->moderator['status'] == 2)
                         {
-                            $lowerMessage = strtolower($test);
-                            if($test == "3" or $lowerMessage == "mulai vote")
+                            if($userMessage == "3" or $userMessage == "mulai vote")
                             {
                                 // change status in database
                                 $status = 3;
@@ -183,9 +183,9 @@ class Webhook extends CI_Controller {
                                 //then, user can join voting by put the code on private chat with bot
                             }
                             // moderator add candidate to list
-                            else if(strpos($lowerMessage,'add') !== false)
+                            else if(strpos($userMessage,'add') !== false)
                             {
-                                $candidate = str_replace('add ', '', $lowerMessage);
+                                $candidate = str_replace('add ', '', $userMessage);
 
                                 // add candidates to database
                                 $this->vote_m->addCandidate($candidate, $this->moderator['vote_id']);
@@ -207,9 +207,9 @@ class Webhook extends CI_Controller {
 
                             }
                             // moderator remove candidate from list
-                            else if(strpos($lowerMessage,'remove') !== false)
+                            else if(strpos($userMessage,'remove') !== false)
                             {
-                                $candidate = str_replace('remove ','', $lowerMessage);
+                                $candidate = str_replace('remove ','', $userMessage);
                                 // remove candidate from list
                                 $this->vote_m->removeCandidate($candidate, $this->moderator['vote_id']);
                                 $message = "List Kandidat\n";
@@ -227,7 +227,7 @@ class Webhook extends CI_Controller {
                               
                                 $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
                             }
-                            else if($lowerMessage == 'list')
+                            else if($userMessage == 'list')
                             {
                                 $message = "List Kandidat\n";
                                 // bot show the list of candidate to room
@@ -806,7 +806,7 @@ class Webhook extends CI_Controller {
 
         // bot send message
         $message = $profile['displayName'] . "mengajukan diri sebagai moderator";
-        $message2 = '\n\nMulai voting dengan mengetikkan "1" atau "begin vote" pada kolom chat';
+        $message2 = "\n\nMulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
         $textMessageBuilder = new TextMessageBuilder($message);
         $this->bot->replyMessage($event['replyToken'],$textMessageBuilder);
 
