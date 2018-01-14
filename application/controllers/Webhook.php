@@ -249,6 +249,53 @@ class Webhook extends CI_Controller {
                                 return 0;
                             }
                         }
+                        else if($this->moderator['status'] == 3)
+                        {
+                            if($userMessage == 'end vote')
+                            {
+                                $message = "Hasil Voting";
+                                // bot show the list of candidate to room
+                                $winner = $this->vote_m->getWinner($this->moderator['vote_id']);
+                                $showList = $this->vote_m->getCandidateList($this->moderator['vote_id']);
+                                $rowNum = 0;
+                                $total = 0;
+                                foreach($showList as $row)
+                                {
+                                    $message .= $rowNum . ". " . $row['candidates'] . "= " . $row['votes'] . "suara";
+                                    $rowNum++;
+                                }
+                                foreach($winner as $win)
+                                {
+                                    $message .= "\n\n Selamat " . $win['candidates'] . "karena telah memenangkan voting dengan total suara sebanyak " .$row['votes']." suara :)";
+                                    $total += 1;
+                                }
+                                if($total > 1)
+                                {
+                                    $message .= "\n\nDikarenakan terdapat lebih dari 1 pemenang, maka disarankan untuk melakukan voting ulang :)";
+                                } 
+
+                                $message2 .= "Terima kasih kepada semua yang telah ikut berpartisipasi :)";
+
+                                $textMessageBuilder = new TextMessageBuilder($message);
+                                $textMessageBuilder2 = new TextMessageBuilder2($message);
+                                $multiMessageBuilder = new MultiMessageBuilder();
+                                $multiMessageBuilder->add($textMessageBuilder);
+                                $multiMessageBuilder->add($textMessageBuilder2);
+
+                                $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+
+                                // change status in database
+                                $status = 0;
+                                $this->vote_m->changeStatus($status, $this->moderator['vote_id']);
+
+                                // bot leave the room
+                                $this->leave($event, $sourceId);
+                            }
+                            else
+                            {
+                                return 0;
+                            }
+                        }
                     }
                 }
                 // another user message
@@ -766,8 +813,8 @@ class Webhook extends CI_Controller {
     $this->vote_m->saveMod($voteId, $profile, $sourceId);
 
     // bot send message
-    $message = $profile['displayName'] . "mengajukan diri sebagai moderator";
-    $message2 = '\n\nMulai voting dengan mengetikkan "1" atau "begin vote" pada kolom chat';
+    $message = $profile['displayName'] . " mengajukan diri sebagai moderator";
+    $message2 = "\n\nMulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
     $textMessageBuilder = new TextMessageBuilder($message);
     $textMessageBuilder2 = new TextMessageBuilder($message2);
     $multiMessageBuilder = new MultiMessageBuilder();
