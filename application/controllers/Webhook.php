@@ -101,7 +101,7 @@ class Webhook extends CI_Controller {
                     }
                     else
                     {
-                        $this->manageVote($event, $this->moderator, $userMessage);
+                        $this->manageVote($event, $this->moderator, $userMessage, $sourceId);
                     }
                 }
                 // another user message
@@ -699,7 +699,7 @@ class Webhook extends CI_Controller {
     return $randomString;
   }
 
-  private function manageVote($event, $moderator, $userMessage)
+  private function manageVote($event, $moderator, $userMessage , sourceId)
   {
     // check status of moderator
     // 0 : Haven't done anything or Vote Ended
@@ -734,7 +734,7 @@ class Webhook extends CI_Controller {
         // bot send next assignment to user
         $message = "Masukkan nama calon kandidat untuk pemilihan ini";
         $message .= "\n\nformat : add (nama kandidat)";
-        $message .= "\ncontoh: add budi";
+        $message .= "\ncontoh : add budi";
         $this->sendMessage($event, $message);
 
         $status = 2;
@@ -743,7 +743,7 @@ class Webhook extends CI_Controller {
     }
     else if($this->moderator['status'] == 2)
     {
-        if($userMessage == "3" or $userMessage == "mulai vote")
+        if($userMessage == "3" or $userMessage == "begin vote")
         {
             // change status in database
             $status = 3;
@@ -776,7 +776,7 @@ class Webhook extends CI_Controller {
             }
 
             $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat.";
-            $message .= "\ncontoh: remove budi";
+            $message .= "\ncontoh : remove budi\n";
             $message .= "\nKetik '3' atau 'begin vote' untuk memulai vote";
             $this->sendMessage($event, $message);
         }
@@ -797,7 +797,7 @@ class Webhook extends CI_Controller {
             }
 
             $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat.";
-            $message .= "\n contoh: remove budi";
+            $message .= "\n contoh : remove budi\n";
             $message .= "\n\nKetik '3' atau 'begin vote' untuk memulai vote";
             $this->sendMessage($event, $message);
         }
@@ -814,7 +814,7 @@ class Webhook extends CI_Controller {
             }
 
             $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat.";
-            $message .= "\n contoh: remove budi";
+            $message .= "\n contoh : remove budi\n";
             $message .= "\n\nKetik '3' atau 'mulai vote' untuk memulai vote";
             $this->sendMessage($event, $message);
         }
@@ -827,8 +827,8 @@ class Webhook extends CI_Controller {
     {
         if($userMessage == 'end vote')
         {
-            $message = $moderator['title'];
-            $message .= "\nHasil Voting\n";
+            $message = '"' . $moderator['title'] '"';
+            $message .= "\n\nHasil Voting\n";
             // bot show the list of candidate to room
             $winner = $this->vote_m->getWinner($moderator['vote_id']);
             $showList = $this->vote_m->getCandidateList($moderator['vote_id']);
@@ -836,7 +836,7 @@ class Webhook extends CI_Controller {
             $total = 0;
             foreach($showList as $row)
             {
-                $message .= $rowNum . ". " . $row['candidates'] . "= " . $row['votes'] . "suara\n";
+                $message .= $rowNum . ". " . $row['candidates'] . " = " . $row['votes'] . "suara\n";
                 $rowNum++;
             }
             foreach($winner as $win)
