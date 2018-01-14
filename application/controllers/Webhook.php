@@ -185,7 +185,7 @@ class Webhook extends CI_Controller {
                             // moderator add candidate to list
                             else if(strpos($lowerMessage,'add') !== false)
                             {
-                                $candidate = str_replace('add ', '', $test);
+                                $candidate = str_replace('add ', '', $lowerMessage);
 
                                 // add candidates to database
                                 $this->vote_m->addCandidate($candidate, $this->moderator['vote_id']);
@@ -209,7 +209,7 @@ class Webhook extends CI_Controller {
                             // moderator remove candidate from list
                             else if(strpos($lowerMessage,'remove') !== false)
                             {
-                                $candidate = str_replace('remove ','', $test);
+                                $candidate = str_replace('remove ','', $lowerMessage);
                                 // remove candidate from list
                                 $this->vote_m->removeCandidate($candidate, $this->moderator['vote_id']);
                                 $message = "List Kandidat\n";
