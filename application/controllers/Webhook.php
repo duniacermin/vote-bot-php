@@ -827,7 +827,7 @@ class Webhook extends CI_Controller {
     {
         if($userMessage == 'end vote')
         {
-            $message = '"' . $moderator['title'] '"';
+            $message = '"' . $moderator['title'] . '"';
             $message .= "\n\nHasil Voting\n";
             // bot show the list of candidate to room
             $winner = $this->vote_m->getWinner($moderator['vote_id']);
