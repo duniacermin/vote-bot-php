@@ -750,8 +750,9 @@ class Webhook extends CI_Controller {
             $this->vote_m->changeStatus($status, $moderator['vote_id']);
 
             $message = "Voting dimulai. Voting akan berakhir saat ". $moderator['displayName'] ." mengakhiri waktu voting.\n\n";
+            $message .= "Selanjutnya silahkan mengikuti proses voting dengan mengirimkan kode dibawah kepada saya melalui private chat :)\n";
             $message .= "Kode untuk mengikuti proses voting : " . $moderator['vote_id'];
-            $message .= "\n\nAkhiri voting dengan mengetikkan 'End Vote' pada chat";
+            $message .= "\n\nVoting berakhir ketika moderator mengetikkan 'End Vote' pada chat";
 
             $this->sendMessage($event, $message);
 
