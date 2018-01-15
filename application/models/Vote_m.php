@@ -165,7 +165,7 @@ class Vote_m extends CI_Model {
 
   function deleteUser($event)
   {
-    $data = $this->db->where('user_id', $event['source']['userId']);
+    $data = $this->db->where('user_id', $event['source']['userId'])
     ->delete('users');
   }
 
