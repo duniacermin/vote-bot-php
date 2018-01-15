@@ -113,41 +113,25 @@ class Webhook extends CI_Controller {
             else
             {
                 $this->user = $this->vote_m->getUser($profile['userId']);
-                // if user want to create vote
+                // action 5 : join vote
+                // input : user input access code
+                // output : candidate list of vote will be given
                 if($this->user['action'] == 5)
                 {
                     $match = $this->vote_m->matchVoteId($userMessage);
                     if($match == true)
                     {
-                        //$voteId = $userMessage;
                         $this->vote_m->addDetailAction($voteId,$event['source']['userId']);
-                        // show candidate list
-                        // $message = "List Kandidat\n";
+
                         // bot show the list of candidate to room
                         $detailVote = $this->vote_m->getDetailVote($userMessage);
-                        
                         $showList = $this->vote_m->getCandidateList($userMessage);
-                        // $rowNum = 0;
                         foreach($showList as $row)
                         {
-                        //     $candidates[] = $row['candidates'];
-                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], $detailVote['title']);
-                        //     //$message .= $rowNum . ". " . $row['candidates'];
-                        //     $rowNum++;
+                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], $row['candidates']);
                         }
-
-                        // for ($i = 0; $i < $rowNum; $i++)
-                        // {
-                        //     $options[] = new MessageTemplateActionBuilder($candidates[$i], $candidates[$i]);
-                        //     $rowNum--;
-                        // }
-
-                        //$textMessageBuilder = new TextMessageBuilder($message);
-
-                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'] , "Pilih kandidatmu" , NULL , $candidates);
-
+                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'],"Pilih kandidatmu" ,NULL , $candidates);
                         $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
-                
                         $this->bot->replyMessage($event['replyToken'], $messageBuilder);
                     }
                     else
@@ -155,6 +139,22 @@ class Webhook extends CI_Controller {
                         $message = "maaf, kode yang anda masukkan salah. coba ulangi lagi";
                         $this->sendMessage($event, $message);
                     }
+                }
+                // action 6 : join vote
+                // input : system save vote data to database
+                // output : bot tell user that vote data has been saved
+                else if($this->user['action'] == 6)
+                {
+                    $voteId = $this->user['detail_action'];
+        
+                    $this->vote_m->submitVote($this->user['detail_action'],$userMessage);
+                    $action = 0;
+                    $this->vote_m->updateAction($action,$this->user['user_id']);
+
+                    $message = "Data voting anda telah diterima.";
+                    $message2 = "Terima kasih telah berpatisipasi dalam pemilihan ini. Nantikan hasil votingnya :)";
+                    
+                    $this->sendMessage2($event, $message, $message2);
                 }
                 else
                 {
