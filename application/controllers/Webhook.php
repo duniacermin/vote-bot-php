@@ -138,7 +138,7 @@ class Webhook extends CI_Controller {
 
                         $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
-                        $this->bot->replyMessage($event['replyToken'],$messageBuilder);
+                        $response = $this->bot->replyMessage($event['replyToken'],$messageBuilder);
                     }
                     else
                     {
