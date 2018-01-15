@@ -52,7 +52,7 @@ class Webhook extends CI_Controller {
         $profile = $getProf->getJSONDecodedBody();
 
         // if event type is follow (user add the bot)
-        if($event['type'] == 'follow' || $event['type'] == 'join')
+        if($event['type'] == 'follow' || $event['type'] == 'join' || $event['type'] == 'unfollow')
         {
           $this->{$event['type'].'Callback'}($event, $profile);
         }
@@ -67,55 +67,68 @@ class Webhook extends CI_Controller {
             {
                 $this->leave($event, $sourceId);
             }
-          // if message come from room or group
-          else if($source == 'room' || $source == 'group')
-          {
-            // check if user is moderator or not
-            $this->moderator = $this->vote_m->checkMod($sourceId);
-
-            // if moderator not found
-            if(! $this->moderator)
+            // if message come from room or group
+            else if($source == 'room' || $source == 'group')
             {
-                // if someone volunteering as moderator
-                if(strtolower($userMessage) == "mod")
-                {
-                    // save data user to database
-                    $this->saveModerator($event, $profile, $sourceId);    
-                }
-                else
-                {
-                    // bot send message saying moderator is not found
-                    $this->missingModerator($event);    
-                }
-                
-            }
+                // check if user is moderator or not
+                $this->moderator = $this->vote_m->checkMod($sourceId);
 
-            else
-            {
-                // only moderator can request
-                if($this->moderator['user_id'] == $event['source']['userId'] )
-                {   
-                    if(strtolower($userMessage) == "leave")
+                // if moderator not found
+                if(! $this->moderator)
+                {
+                    // if someone volunteering as moderator
+                    if(strtolower($userMessage) == "mod")
                     {
-                        $this->leave($event, $sourceId);
+                        // save data user to database
+                        $this->saveModerator($event, $profile, $sourceId);    
                     }
                     else
                     {
-                        $this->manageVote($event, $this->moderator, $userMessage, $sourceId);
+                        // bot send message saying moderator is not found
+                        $this->missingModerator($event);    
                     }
                 }
-                // another user message
                 else
+                {
+                    // only moderator can request
+                    if($this->moderator['user_id'] == $event['source']['userId'] )
+                    {   
+                        if(strtolower($userMessage) == "leave")
+                        {
+                            $this->leave($event, $sourceId);
+                        }
+                        else
+                        {
+                            $this->manageVote($event, $this->moderator, $userMessage, $sourceId);
+                        }
+                    }
+                    // another user message
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            // if message come privately from user
+            else
+            {
+                $this->user = $this->vote_m->getUser($event['source']['userId']);
+                // if user want to create vote
+                if($userMessage == "1" || $userMessage == "create vote")
                 {
 
                 }
-            }
-          }
-          // if message come privately from user
-          else
-          {
+                // if user want to join vote
+                else if($userMessage == "2" || $userMessage == "join vote")
+                {
 
-          } 
+                }
+                // tell user what to do
+                else
+                {
+                    $this->tellMessage($event);
+                }
+            } 
         }
 
         // // if events source come from room
@@ -476,7 +489,6 @@ class Webhook extends CI_Controller {
         }*/
       }
     }
-
   } // end of index.php
 
   /*private function followCallback(&event)
@@ -539,8 +551,9 @@ class Webhook extends CI_Controller {
 
   }*/
 
-    private function followCallback($event)
+    private function followCallback($event, $profile)
     {
+        $this->vote_m->saveUser($profile);
         // bot send welcome message
         $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
         $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
@@ -549,9 +562,11 @@ class Webhook extends CI_Controller {
         $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
 
         $this->sendMessage2($event, $message, $message2);
+    }
 
-        // send reply message
-        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+    private function unfollowCallback($event, $profile)
+    {
+        $this->vote_m->deleteUser($profile);
     }
 
     private function joinCallback($event)
@@ -584,70 +599,41 @@ class Webhook extends CI_Controller {
         $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
-  private function checkSource($event)
-  {
-    if($event['source']['type'] == 'room')
+    private function checkSource($event)
     {
-      $source = 'room';
+        if($event['source']['type'] == 'room')
+        {
+            $source = 'room';
+        }
+        else if($event['source']['type'] == 'group')
+        {
+            $source = 'group';
+        }
+        else if($event['source']['type'] == 'user')
+        {
+            $source = 'user';
+        }
+        return $source;
     }
-    else if($event['source']['type'] == 'group')
-    {
-      $source = 'group';
-    }
-    else if($event['source']['type'] == 'user')
-    {
-      $source = 'user';
-    }
-    return $source;
-  }
   
-  private function checkSourceId($event)
-  {
-    if($event['source']['type'] == 'room')
+    private function checkSourceId($event)
     {
-      $sourceId = $event['source']['roomId'];
+        if($event['source']['type'] == 'room')
+        {
+            $sourceId = $event['source']['roomId'];
+        }
+        else if($event['source']['type'] == 'group')
+        {
+            $sourceId = $event['source']['groupId'];
+        }
+        else if($event['source']['type'] == 'user')
+        {
+            $sourceId = $event['source']['userId'];
+        }
+        return $sourceId;
     }
-    else if($event['source']['type'] == 'group')
-    {
-      $sourceId = $event['source']['groupId'];
-    }
-    else if($event['source']['type'] == 'user')
-    {
-      $sourceId = $event['source']['userId'];
-    }
-    return $sourceId;
-  }
 
-  private function saveModerator($event , $profile ,$sourceId)
-  {
-    // generate vote id
-    $voteId = $this->generateRandomString();
-
-    // save user as moderator
-    $this->vote_m->saveMod($voteId, $profile, $sourceId);
-
-    // bot send message
-    $message = $profile['displayName'] . " mengajukan diri sebagai moderator";
-    $message2 = "Mulai voting dengan mengetikkan '1' atau 'create vote' pada kolom chat";
-    
-    $this->sendMessage2($event, $message, $message2);
-  }
-
-  private function missingModerator($event)
-  {
-    $message = 'Moderator belum ditemukan.';
-    $message2 = 'Ajukan diri sebagai moderator dengan mengetik "mod" pada kolom chat';
-    
-    $this->sendMessage2($event, $message, $message2);
-  }
-
-  private function checkModerator($event , $profile ,$sourceId)
-  {
-    // check if user is moderator or not
-    $moderator = $this->vote_m->checkMod($event['source']['roomId']);
-
-    // if moderator doesn't exist
-    if(! $moderator)
+    private function saveModerator($event , $profile ,$sourceId)
     {
         // generate vote id
         $voteId = $this->generateRandomString();
@@ -656,37 +642,76 @@ class Webhook extends CI_Controller {
         $this->vote_m->saveMod($voteId, $profile, $sourceId);
 
         // bot send message
-        $message = $profile['displayName'] . "mengajukan diri sebagai moderator";
-        $message2 = "Mulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
+        $message = $profile['displayName'] . " mengajukan diri sebagai moderator";
+        $message2 = "Mulai voting dengan mengetikkan '1' atau 'create vote' pada kolom chat";
+    
         $this->sendMessage2($event, $message, $message2);
-
-        return $moderator;
     }
 
-    else
+    private function missingModerator($event)
     {
-      return $moderator;
+        $message = 'Moderator belum ditemukan.';
+        $message2 = 'Ajukan diri sebagai moderator dengan mengetik "mod" pada kolom chat';
+    
+        $this->sendMessage2($event, $message, $message2);
     }
-  }
 
-  private function leave($event, $sourceId)
-  {
-    //delete data from database
-    $this->vote_m->deleteVote($sourceId);
+    private function checkModerator($event , $profile ,$sourceId)
+    {
+        // check if user is moderator or not
+        $moderator = $this->vote_m->checkMod($event['source']['roomId']);
 
-    if($event['source']['type'] == 'room')
-    {
-      $this->bot->leaveRoom($sourceId);
+        // if moderator doesn't exist
+        if(! $moderator)
+        {
+            // generate vote id
+            $voteId = $this->generateRandomString();
+
+            // save user as moderator
+            $this->vote_m->saveMod($voteId, $profile, $sourceId);
+
+            // bot send message
+            $message = $profile['displayName'] . "mengajukan diri sebagai moderator";
+            $message2 = "Mulai voting dengan mengetikkan '1' atau 'begin vote' pada kolom chat";
+            $this->sendMessage2($event, $message, $message2);
+
+            return $moderator;
+        }
+
+        else
+        {
+            return $moderator;
+        }
     }
-    else if($event['source']['type'] == 'group')
+
+    private function tellMessage($event, $profile)
     {
-      $this->bot->leaveGroup($sourceId);
+        // bot send welcome message
+        $message = "Hai " . $profile['displayName'] . ", apa yang ingin kamu lakukan?";
+        $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
+        $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+
+        $this->sendMessage2($event, $message, $message2);
     }
-    else
+
+    private function leave($event, $sourceId)
     {
-      return 0;
+        //delete data from database
+        $this->vote_m->deleteVote($sourceId);
+
+        if($event['source']['type'] == 'room')
+        {
+            $this->bot->leaveRoom($sourceId);
+        }
+        else if($event['source']['type'] == 'group')
+        {
+            $this->bot->leaveGroup($sourceId);
+        }
+        else
+        {
+            return 0;
+        }   
     }
-  }
 
   private function generateRandomString($length = 5) 
   {
@@ -796,7 +821,6 @@ class Webhook extends CI_Controller {
                 $message .= $rowNum . ". " . $row['candidates'] . "\n";
                 $rowNum++;
             }
-
             $message .= "\n\nHapus kandidat dari list dengan mengetik 'remove (nama kandidat)' pada kolom chat.";
             $message .= "\n contoh : remove budi\n";
             $message .= "\n\nKetik '3' atau 'begin vote' untuk memulai vote";
