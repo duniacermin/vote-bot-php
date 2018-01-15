@@ -138,6 +138,11 @@ class Webhook extends CI_Controller {
                             $message = "yes";
                             $this->sendMessage($event, $message);
                         }
+                        else
+                        {
+                            $message = "maaf, kode yang anda masukkan salah. coba ulangi lagi";
+                            $this->sendMessage($event, $message);
+                        }
                     }                    
                 }
                 // tell user what to do
