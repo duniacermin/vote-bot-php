@@ -128,7 +128,7 @@ class Webhook extends CI_Controller {
                         $buttonTemplateBuilder = new ButtonTemplateBuilder(
      "title",
      "text",
-     "https://i0.wp.com/angryanimebitches.com/wp-content/uploads/2013/03/tamakomarket-overallreview-tamakoanddera.jpg",
+     NULL,
    [
 new MessageTemplateActionBuilder('Action Button','action'),
    ]
