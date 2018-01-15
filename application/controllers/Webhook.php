@@ -157,7 +157,7 @@ $this->bot->replyMessage($event['replyToken'], $templateMessage);
 
                         //$messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
-                        $this->bot->replyMessage($event['replyToken'], $messageBuilder);
+                        //$this->bot->replyMessage($event['replyToken'], $messageBuilder);
                     }
                     else
                     {
