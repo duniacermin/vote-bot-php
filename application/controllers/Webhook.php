@@ -124,7 +124,7 @@ class Webhook extends CI_Controller {
                         // show candidate list
                         // $message = "List Kandidat\n";
                         // bot show the list of candidate to room
-                        $detailVote = $this->vote_m->getDetailVote($voteId);
+                        $detailVote = $this->vote_m->getDetailVote($userMessage);
                         
                         $showList = $this->vote_m->getCandidateList($userMessage);
                         // $rowNum = 0;
