@@ -131,7 +131,7 @@ class Webhook extends CI_Controller {
                         foreach($showList as $row)
                         {
                         //     $candidates[] = $row['candidates'];
-                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], "meong");
+                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], $detailVote['title']);
                         //     //$message .= $rowNum . ". " . $row['candidates'];
                         //     $rowNum++;
                         }
