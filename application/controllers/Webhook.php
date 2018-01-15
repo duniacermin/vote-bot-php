@@ -134,11 +134,13 @@ class Webhook extends CI_Controller {
                             $rowNum++;
                         }
 
+                        $textMessageBuilder = new TextMessageBuilder($message);
+
                         //$buttonTemplate = new ButtonTemplateBuilder($detailVote['title'],"Pilih kandidatmu",'',$candidates);
 
                         //$messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
-                        $this->bot->replyMessage($event['replyToken'], $message);
+                        $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
                     }
                     else
                     {
