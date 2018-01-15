@@ -114,14 +114,27 @@ class Webhook extends CI_Controller {
             {
                 $this->user = $this->vote_m->getUser($profile['userId']);
                 // if user want to create vote
-                if($userMessage == "1" || $userMessage == "create vote")
+                if($this->user['action'] == 5)
                 {
-
+                    $match = $this->vote_m->matchVoteId($userMessage);
+                    if($match == true)
+                    {
+                        $message = "yes";
+                        $this->sendMessage($event, $message);
+                    }
+                    else
+                    {
+                        $message = "maaf, kode yang anda masukkan salah. coba ulangi lagi";
+                        $this->sendMessage($event, $message);
+                    }
                 }
-                // if user want to join vote
-                else if($userMessage == "2" || $userMessage == "join vote")
+                else
                 {
-                    if($this->user['action'] == 0)
+                    if($userMessage == "1" || $userMessage == "create vote")
+                    {
+
+                    }
+                    else if($userMessage == "2" || $userMessage == "join vote")
                     {
                         $message = "Masukkan kode akses kamu disini";
                     
@@ -130,25 +143,10 @@ class Webhook extends CI_Controller {
                         $action = 5;
                         $this->vote_m->updateAction($action,$this->user['user_id']);
                     }
-                    else if($this->user['action'] == 5)
+                    else
                     {
-                        $match = $this->vote_m->matchVoteId($userMessage);
-                        if($match == true)
-                        {
-                            $message = "yes";
-                            $this->sendMessage($event, $message);
-                        }
-                        else
-                        {
-                            $message = "maaf, kode yang anda masukkan salah. coba ulangi lagi";
-                            $this->sendMessage($event, $message);
-                        }
-                    }                    
-                }
-                // tell user what to do
-                else
-                {
-                    $this->tellMessage($event, $profile);
+                        $this->tellMessage($event, $profile);
+                    }
                 }
             } 
         }
