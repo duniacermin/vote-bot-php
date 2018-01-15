@@ -133,6 +133,9 @@ class Webhook extends CI_Controller {
                         $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'],"Pilih kandidatmu" ,NULL , $candidates);
                         $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                         $this->bot->replyMessage($event['replyToken'], $messageBuilder);
+
+                        $action = 6;
+                        $this->vote_m->updateAction($action,$this->user['user_id']);
                     }
                     else
                     {
@@ -145,16 +148,24 @@ class Webhook extends CI_Controller {
                 // output : bot tell user that vote data has been saved
                 else if($this->user['action'] == 6)
                 {
-                    $voteId = $this->user['detail_action'];
-        
-                    $this->vote_m->submitVote($this->user['detail_action'],$userMessage);
-                    $action = 0;
-                    $this->vote_m->updateAction($action,$this->user['user_id']);
+                    $submit = $this->vote_m->submitVote($this->user['detail_action'],$userMessage);
+                    if($submit->isSucceeded())
+                    {
+                        $action = 0;
+                        $this->vote_m->updateAction($action,$this->user['user_id']);
 
-                    $message = "Data voting anda telah diterima.";
-                    $message2 = "Terima kasih telah berpatisipasi dalam pemilihan ini. Nantikan hasil votingnya :)";
-                    
-                    $this->sendMessage2($event, $message, $message2);
+                        $message = "Data voting anda telah diterima.";
+                        $message2 = "Terima kasih telah berpatisipasi dalam pemilihan ini. Nantikan hasil votingnya :)";
+                        
+                        $this->sendMessage2($event, $message, $message2);
+                    }
+                    else
+                    {
+                        $action = 5;
+                        $message = "Data voting gagal diterima. Masukkan kembali kode akses anda";
+
+                        $this->sendMessage($event, $message);
+                    }
                 }
                 else
                 {
