@@ -121,7 +121,7 @@ class Webhook extends CI_Controller {
                     $match = $this->vote_m->matchVoteId($userMessage);
                     if($match == true)
                     {
-                        $this->vote_m->addDetailAction($voteId,$event['source']['userId']);
+                        $this->vote_m->addDetailAction($userMessage, $this->user['user_id']);
 
                         // bot show the list of candidate to room
                         $detailVote = $this->vote_m->getDetailVote($userMessage);
@@ -148,11 +148,11 @@ class Webhook extends CI_Controller {
                 // output : bot tell user that vote data has been saved
                 else if($this->user['action'] == 6)
                 {
-                    $submit = $this->vote_m->submitVote($this->user['detail_action'],$userMessage);
+                    $submit = $this->vote_m->submitVote($this->user['detail_action'], $userMessage);
                     if($submit->isSucceeded())
                     {
                         $action = 0;
-                        $this->vote_m->updateAction($action,$this->user['user_id']);
+                        $this->vote_m->updateAction($action, $this->user['user_id']);
 
                         $message = "Data voting anda telah diterima.";
                         $message2 = "Terima kasih telah berpatisipasi dalam pemilihan ini. Nantikan hasil votingnya :)";
