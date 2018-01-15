@@ -126,7 +126,7 @@ class Webhook extends CI_Controller {
                 // tell user what to do
                 else
                 {
-                    $this->tellMessage($event);
+                    $this->tellMessage($event, $profile);
                 }
             } 
         }
@@ -556,8 +556,8 @@ class Webhook extends CI_Controller {
         $this->vote_m->saveUser($profile);
         // bot send welcome message
         $message = "Salam kenal, " . $profile['displayName'] . " :) \n";
-        $message .= "Terima kasih telah menambahkan saya sebagai teman \n";
-        $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :) \n\n";
+        $message .= "Terima kasih telah menambahkan saya sebagai teman \n\n\n";
+        $message .= "Saya adalah bot yang dapat membantu kalian untuk dalam proses voting :)";
         $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
         $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
 
@@ -566,7 +566,7 @@ class Webhook extends CI_Controller {
 
     private function unfollowCallback($event, $profile)
     {
-        $this->vote_m->deleteUser($profile);
+        $this->vote_m->deleteUser($event);
     }
 
     private function joinCallback($event)
