@@ -177,6 +177,7 @@ class Webhook extends CI_Controller {
                             else
                             {
                                 $action = 5;
+                                $this->vote_m->updateAction($action,$this->user['user_id']);
                                 $message = "Data voting gagal diterima. Masukkan kembali kode akses anda";
 
                                 $this->sendMessage($event, $message);
