@@ -149,7 +149,7 @@ class Webhook extends CI_Controller {
                 else if($this->user['action'] == 6)
                 {
                     $submit = $this->vote_m->submitVote($this->user['detail_action'], $userMessage);
-                    if($submit->isSucceeded())
+                    if($submit == true)
                     {
                         $action = 0;
                         $this->vote_m->updateAction($action, $this->user['user_id']);
