@@ -163,6 +163,12 @@ class Vote_m extends CI_Model {
     return $this->db->insert_id();
   }
 
+  function deleteUser($profile)
+  {
+    $delete1 = $this->db->where('user_id', $profile['userId'])
+    ->delete('users');
+  }
+
   function updateAction($action,$userId)
   {
     $data = $this->db->set('action',$action)
