@@ -131,7 +131,7 @@ class Webhook extends CI_Controller {
                         foreach($showList as $row)
                         {
                         //     $candidates[] = $row['candidates'];
-                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], $row['candidates']);
+                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], "meong");
                         //     //$message .= $rowNum . ". " . $row['candidates'];
                         //     $rowNum++;
                         }
@@ -144,7 +144,7 @@ class Webhook extends CI_Controller {
 
                         //$textMessageBuilder = new TextMessageBuilder($message);
 
-                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'], "Pilih kandidatmu" , NULL , $candidates);
+                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'] , "Pilih kandidatmu" , NULL , $candidates);
 
                         $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
