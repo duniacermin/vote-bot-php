@@ -126,17 +126,24 @@ class Webhook extends CI_Controller {
                         // bot show the list of candidate to room
                         $detailVote = $this->vote_m->getDetailVote($voteId);
                         $showList = $this->vote_m->getCandidateList($userMessage);
-                        //$rowNum = 0;
+                        $rowNum = 0;
                         foreach($showList as $row)
                         {
-                            $candidates[] = new MessageTemplateActionBuilder($row['candidates'], $row['candidates']);
+                            $candidates[] = $row['candidates'];
+                            //$candidates[] = new MessageTemplateActionBuilder($row['candidates'], $row['candidates']);
                             //$message .= $rowNum . ". " . $row['candidates'];
-                            //$rowNum++;
+                            $rowNum++;
+                        }
+                        
+                        for ($i = 0; $i < $rowNum; $i++)
+                        {
+                            $options[] = new MessageTemplateActionBuilder($candidates[$i], $candidates[$i]);
+                            $rowNum--;
                         }
 
                         //$textMessageBuilder = new TextMessageBuilder($message);
 
-                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'], 'Pilih kandidatmu' , '', $candidates);
+                        $buttonTemplate = new ButtonTemplateBuilder($detailVote['title'], "Pilih kandidatmu" , "" , $options);
 
                         $messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
