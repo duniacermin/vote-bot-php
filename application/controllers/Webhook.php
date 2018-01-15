@@ -119,13 +119,13 @@ class Webhook extends CI_Controller {
                     $match = $this->vote_m->matchVoteId($userMessage);
                     if($match == true)
                     {
-                        $voteId = $userMessage;
+                        //$voteId = $userMessage;
                         $this->vote_m->addDetailAction($voteId,$event['source']['userId']);
                         // show candidate list
                         $message = "List Kandidat\n";
                         // bot show the list of candidate to room
                         //$detailVote = $this->vote_m->getDetailVote($voteId);
-                        $showList = $this->vote_m->getCandidateList($voteId);
+                        $showList = $this->vote_m->getCandidateList($userMessage);
                         $rowNum = 0;
                         foreach($showList as $row)
                         {
@@ -138,7 +138,7 @@ class Webhook extends CI_Controller {
 
                         //$messageBuilder = new TemplateMessageBuilder("Gunakan mobile app untuk melihat voting", $buttonTemplate);
                 
-                        $this->bot->replyMessage($event['replyToken'],$message);
+                        $this->bot->replyMessage($event['replyToken'], $message);
                     }
                     else
                     {
