@@ -185,6 +185,50 @@ class Vote_m extends CI_Model {
     }
   }
 
+  function addVoter($userId, $voteId, $candidate)
+  {
+    $data = $this->db->set('user_id', $userId)
+    ->set('vote_id', $voteId)
+    ->set('cand' , $candidate)
+    ->insert('participant')
+
+    return $this->db->insert_id();
+  }
+
+  function checkAvailability($userId, $voteId)
+  {
+    $data = $this->db->where('user_id', $userId)
+    ->where('vote_id', $voteId)
+    ->get('participant')
+    ->row_array();
+
+    if(count($data) > 0) 
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  function nullifyAction($action,$userId)
+  {
+    $data = $this->db->set('detail_action',$action)
+    ->set('action', $action)
+    ->where('user_id',$userId)
+    ->update('users');
+
+    if($this->db->affected_rows() > 0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   function addDetailAction($voteId,$userId)
   {
     $data = $this->db->set('detail_action',$voteId)
