@@ -190,7 +190,7 @@ class Vote_m extends CI_Model {
     $data = $this->db->set('user_id', $userId)
     ->set('vote_id', $voteId)
     ->set('cand' , $candidate)
-    ->insert('participant')
+    ->insert('participant');
 
     return $this->db->insert_id();
   }
