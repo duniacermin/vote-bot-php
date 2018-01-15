@@ -112,7 +112,7 @@ class Webhook extends CI_Controller {
             // if message come privately from user
             else
             {
-                $this->user = $this->vote_m->getUser($event['source']['userId']);
+                $this->user = $this->vote_m->getUser($profile['userId']);
                 // if user want to create vote
                 if($userMessage == "1" || $userMessage == "create vote")
                 {
@@ -121,7 +121,24 @@ class Webhook extends CI_Controller {
                 // if user want to join vote
                 else if($userMessage == "2" || $userMessage == "join vote")
                 {
+                    if($this->user['action'] == 0)
+                    {
+                        $message = "Masukkan kode akses kamu disini";
+                    
+                        $this->sendMessage($event, $message);
 
+                        $action = 5;
+                        $this->vote_m->updateAction($action,$this->user['user_id']);
+                    }
+                    else if($this->user['action'] == 5)
+                    {
+                        $match = $this->vote_m->matchVoteId($userMessage);
+                        if($match == true)
+                        {
+                            $message = "yes";
+                            $this->sendMessage($event, $message);
+                        }
+                    }                    
                 }
                 // tell user what to do
                 else
@@ -389,7 +406,7 @@ class Webhook extends CI_Controller {
 
         //       $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
 
-        //       $action = 'join';
+        //       $action = 5;
         //       $this->vote_m->updateAction($action,$event['source']['userId']);
         //     }
         //     else if($this->user['action'] == 'join')
