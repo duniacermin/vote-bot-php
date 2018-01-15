@@ -220,7 +220,7 @@ class Vote_m extends CI_Model {
 
   function submitVote($vote,$userMessage)
   {
-    $data = $this->db->set('votes','votes + 1')
+    $data = $this->db->set('votes',"votes + 1")
     ->where('vote_id', $vote)
     ->where('candidates', $userMessage)
     ->update('vote_contain');
