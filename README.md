@@ -6,7 +6,7 @@ Simple Vote Bot using PHP, CI Framework, and LINE Messaging API
 
 ### Overview
 1. Create vote in a room / group by inviting bot
-![screenshot 1](http://res.cloudinary.com/duniacermin/image/upload/v1516192118/Screenshot_2018-01-17-19-27-02_lvh41k.png | width=100)
+<img src="http://res.cloudinary.com/duniacermin/image/upload/v1516192118/Screenshot_2018-01-17-19-27-02_lvh41k.png" width="100">
 2. Choose one member of room/ group as moderator, so only moderator can manage the vote
 ![screenshot 2](http://res.cloudinary.com/duniacermin/image/upload/v1516192349/Screenshot_2018-01-17-19-32-07_yepmpe.png | width=100)
 3. Add / remove candidates
