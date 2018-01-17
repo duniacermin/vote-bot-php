@@ -12,7 +12,7 @@ Simple Vote Bot using PHP, CI Framework, and LINE Messaging API
 3. Add / remove candidates
 <img src="http://res.cloudinary.com/duniacermin/image/upload/v1516193882/Screenshot_2018-01-17-19-57-40_dnai0u.png" width="400">
 4. Use access code to submit votes, so one person only can submit one votes
-<img src="http://res.cloudinary.com/duniacermin/image/upload/v1516193882/Screenshot_2018-01-17-19-57-40_dnai0u.png" width="400">
+<img src="http://res.cloudinary.com/duniacermin/image/upload/v1516194259/Screenshot_2018-01-17-19-58-16_b5peo5.png" width="400">
 5. Submit your vote privately to bot without anyone notice
 <img src="http://res.cloudinary.com/duniacermin/image/upload/v1516194381/Screenshot_2018-01-17-20-05-28_vimfhu.png" width="400"> 
 6. Result of voting will appear on room/group after moderator close the vote
