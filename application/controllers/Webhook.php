@@ -153,6 +153,12 @@ class Webhook extends CI_Controller {
                             }
                             else
                             {
+                                if($userMessage == "main menu")
+                                {
+                                    $action = 0;
+                                    $this->vote_m->updateAction($action,$this->user['user_id']);
+                                    $this->tellMessage($event, $profile);
+                                }
                                 $message = "maaf, kode yang anda masukkan salah. coba ulangi lagi";
                                 $this->sendMessage($event, $message);
                             }
@@ -185,11 +191,11 @@ class Webhook extends CI_Controller {
                         }
                         else
                         {
-                            if($userMessage == "1" || $userMessage == "create vote")
-                            {
+//                             if($userMessage == "1" || $userMessage == "create vote")
+//                             {
 
-                            }
-                            else if($userMessage == "2" || $userMessage == "join vote")
+//                             }
+                            else if($userMessage == "join vote")
                             {
                                 $message = "Masukkan kode akses kamu disini";
                             
@@ -318,8 +324,9 @@ class Webhook extends CI_Controller {
     {
         // bot send welcome message
         $message = "Hai " . $profile['displayName'] . ", apa yang ingin kamu lakukan?";
-        $message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
-        $message2 .= "Ketik '2' atau 'join vote' untuk mengikuti voting yang sedang berlangsung";
+        //$message2 = "Ketik '1' atau 'create vote' untuk membuat voting\n\n";
+        $message2 = "Ketik 'join vote' untuk mengikuti voting yang sedang berlangsung";
+        $message2 .= "\n\n Kamu dapat kembali ke menu utama dengan mengetikkan 'main menu' pada kolom chat.";
 
         $this->sendMessage2($event, $message, $message2);
     }
