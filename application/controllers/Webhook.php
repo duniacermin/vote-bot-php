@@ -195,7 +195,7 @@ class Webhook extends CI_Controller {
 //                             {
 
 //                             }
-                            else if($userMessage == "join vote")
+                            if($userMessage == "join vote")
                             {
                                 $message = "Masukkan kode akses kamu disini";
                             
